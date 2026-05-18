@@ -1,0 +1,243 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (494.100.6)"
+    }
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Root"
+{
+    reorder nameChildren = ["RedBluePin", "YellowYellowPin", "RedYellowPin", "BlueYellowPin"]
+    def "RedBluePin" (
+        active = true
+        references = @cadPinModel.usdz@
+    )
+    {
+        float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        float3 xformOp:translate = (0, 0, -0.50006896)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Materials"
+        {
+            over "topHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "topHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (1, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (1, 0.03854419, 0.057957128) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "bottomHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "bottomHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0.054855492, 0.11298294, 1) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0.033406816, 0.064895645, 1) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            uniform token info:id = "RealityKit.RigidBody"
+            bool isCCDEnabled = 0
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (8.000282, 7.69621, 16.50315)
+                float height = 7.69621
+                float radius = 8.251575
+                token shapeType = "Capsule"
+
+                def RealityKitStruct "pose"
+                {
+                    float3 position = (-0.0000150203705, -0.17430961, 0.00080013275)
+                }
+            }
+        }
+    }
+
+    def "YellowYellowPin" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        references = @cadPinModel.usdz@
+    )
+    {
+        rel material:binding = </Root/YellowYellowPin/Materials/topHalf> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Materials"
+        {
+            over "topHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "topHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (1, 0.9538584, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (1, 0.9538584, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "bottomHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "bottomHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (1, 0.9440254, 0.08986084) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (1, 0.955483, 0.07134938) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+        }
+    }
+
+    def "RedYellowPin" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        references = @cadPinModel.usdz@
+    )
+    {
+        rel material:binding = </Root/RedYellowPin/Materials/topHalf> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        float3 xformOp:translate = (0.24921557, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Materials"
+        {
+            over "topHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "topHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (1, 0, 0.10159769) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (1, 0.055635583, 0.083634645) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "bottomHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "bottomHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (1, 0.93467134, 0.0043998268) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (1, 0.8873452, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+        }
+    }
+
+    def "BlueYellowPin" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        references = @cadPinModel.usdz@
+    )
+    {
+        rel material:binding = </Root/BlueYellowPin/Materials/topHalf> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        float3 xformOp:translate = (-0.25714585, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Materials"
+        {
+            over "topHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "topHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0.0009430406, 0.0726718, 1) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0.048981566, 0, 1) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "bottomHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "bottomHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (1, 0.9002201, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (1, 0.93339235, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+        }
+    }
+}
+

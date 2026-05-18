@@ -1,0 +1,10 @@
+{
+  "pathsToIds" : {
+    "\/RoboticsSimulationAssets\/Sources\/RoboticsSimulationAssets\/RoboticsSimulationAssets.rkassets\/Scene.usda" : "03317E4B-C806-4C03-9992-89E0B63E34BD",
+    "RoboticsSimulationAssets\/Sources\/RoboticsSimulationAssets\/RoboticsSimulationAssets.rkassets\/Scene.usda" : "86187E13-085A-46FE-B509-C5B9370BBBE6"
+  },
+  "projectID" : 5247011081396867586,
+  "uuidToIntID" : {
+    "86187E13-085A-46FE-B509-C5B9370BBBE6" : -5317202675331256959
+  }
+}

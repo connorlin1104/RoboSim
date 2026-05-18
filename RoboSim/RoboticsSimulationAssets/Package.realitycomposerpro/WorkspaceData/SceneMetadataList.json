@@ -1,0 +1,44 @@
+{
+  "86187E13-085A-46FE-B509-C5B9370BBBE6" : {
+    "objectMetadataList" : [
+      [
+        "86187E13-085A-46FE-B509-C5B9370BBBE6",
+        "Root"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "86187E13-085A-46FE-B509-C5B9370BBBE6",
+        "Root",
+        "pinRedBlue"
+      ],
+      {
+        "disallowsFraming" : false,
+        "isExpanded" : false,
+        "isLocked" : false
+      },
+      [
+        "86187E13-085A-46FE-B509-C5B9370BBBE6",
+        "Root",
+        "cadPin2",
+        "Materials"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "86187E13-085A-46FE-B509-C5B9370BBBE6",
+        "Root",
+        "cadPinModel_1",
+        "Materials"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      }
+    ]
+  }
+}
