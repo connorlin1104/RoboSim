@@ -40,15 +40,15 @@ enum LoaderRowPlacements {
             // --- Back row: A Y A ---------------------------------------
             let backX = side.platformX + backRowXOffset * side.frontDir
             for z in backAllianceZ {
-                pins.append((SIMD3<Float>(backX, loaderSpawnY, z), side.alliance, .yellow, .vertical))
+                pins.append((SIMD3<Float>(backX, loaderSpawnY, z), side.alliance, .yellow, .vertical, nil))
             }
             // 1 yellow/yellow pin centered between them (decor only).
-            pins.append((SIMD3<Float>(backX, loaderSpawnY, backYellowZ), .yellow, .yellow, .vertical))
+            pins.append((SIMD3<Float>(backX, loaderSpawnY, backYellowZ), .yellow, .yellow, .vertical, nil))
 
             // --- Middle row: 10 alliance pins --------------------------
             let pinX = side.platformX + pinRowXOffset * side.frontDir
             for z in pinRowZ {
-                pins.append((SIMD3<Float>(pinX, loaderSpawnY, z), side.alliance, .yellow, .vertical))
+                pins.append((SIMD3<Float>(pinX, loaderSpawnY, z), side.alliance, .yellow, .vertical, nil))
             }
 
             // --- Front row: 10 cups (toward the field) -----------------

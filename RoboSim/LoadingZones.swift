@@ -2,7 +2,8 @@ import RealityKit
 import UIKit
 
 // Built outside the field perimeter on the west (red) and east (blue) sides:
-//   • match-load chutes (one per corner — NW/SW red, NE/SE blue)
+//   • match-load chutes (one per corner — NW/SW red, NE/SE blue) using the
+//     RedMatchloader / BlueMatchloader assets out of the master scene
 //   • L-shaped floor tape inside each chute corner
 //   • big alliance-colored loader platforms slid up against W/E walls
 //
@@ -16,44 +17,57 @@ enum LoadingZones {
         let eastCenterX:   Float
     }
 
+    private enum ChuteAlliance { case red, blue }
+
     @MainActor
     static func build(into fieldContainer: Entity,
-                      surfaceMaterial: PhysicsMaterialResource) -> PlatformGeometry {
-        addChutesAndLTape(into: fieldContainer)
+                      surfaceMaterial: PhysicsMaterialResource,
+                      masterScene: Entity?) -> PlatformGeometry {
+        addChutesAndLTape(into: fieldContainer, masterScene: masterScene)
         return addLoaderPlatforms(into: fieldContainer, surfaceMaterial: surfaceMaterial)
     }
 
-    // --- MATCH LOAD CHUTES (hollow 3D structure + U-shape tape on floor) -
+    // --- MATCH LOAD CHUTES (Matchloader assets + L-shape tape on floor) ---
     @MainActor
-    private static func addChutesAndLTape(into fieldContainer: Entity) {
+    private static func addChutesAndLTape(into fieldContainer: Entity,
+                                          masterScene: Entity?) {
         let halfField = SimulationConstants.halfField
         let tileSize  = SimulationConstants.tileSize
         let tapeIntoField: Float = tileSize / 2
         let tapeWidth: Float = 0.035
 
         // 4 chutes: 2 red (W wall, NW + SW), 2 blue (E wall, NE + SE)
-        let chuteWallInset: Float = tapeIntoField / 2 - 0.02
-        let chuteCornerInset: Float = 0.5 * tileSize    // chute sits at the end of the L tape's long leg
+        // -----------------------------------------------------------------
+        // CHUTE PLACEMENT — change the per-corner positions below.
+        // Each chute's world position is set by `ChuteSpec.pos`. To move a
+        // single chute (e.g. just the NE blue one), edit that corner's
+        // SIMD3 below. `chuteWallInset` / `chuteCornerInset` move all four
+        // chutes uniformly toward / away from the perimeter.
+        // -----------------------------------------------------------------
+        let chuteWallInset: Float = tapeIntoField / 2 - 0.1    // distance from perimeter wall into field
+        let chuteCornerInset: Float = 0.5 * tileSize           // distance from field corner along the wall
 
-        struct ChuteSpec { let pos: SIMD3<Float>; let yRot: Float; let color: UIColor }
+        struct ChuteSpec { let pos: SIMD3<Float>; let yRot: Float; let alliance: ChuteAlliance }
 
-        let nwPos = SIMD3<Float>(-halfField + chuteWallInset, 0,  halfField - chuteCornerInset)
-        let swPos = SIMD3<Float>(-halfField + chuteWallInset, 0, -halfField + chuteCornerInset)
-        let nePos = SIMD3<Float>( halfField - chuteWallInset, 0,  halfField - chuteCornerInset)
-        let sePos = SIMD3<Float>( halfField - chuteWallInset, 0, -halfField + chuteCornerInset)
+        let nwPos = SIMD3<Float>(-halfField + chuteWallInset, 0.15,  halfField - chuteCornerInset)   // NW chute world position
+        let swPos = SIMD3<Float>(-halfField + chuteWallInset, 0.15, -halfField + chuteCornerInset)   // SW chute world position
+        let nePos = SIMD3<Float>( halfField - chuteWallInset, 0.15,  halfField - chuteCornerInset)   // NE chute world position
+        let sePos = SIMD3<Float>( halfField - chuteWallInset, 0.15, -halfField + chuteCornerInset)   // SE chute world position
 
         let chuteSpecs: [ChuteSpec] = [
-            ChuteSpec(pos: nwPos, yRot: 0,     color: .systemRed),  // NW
-            ChuteSpec(pos: swPos, yRot: 0,     color: .systemRed),  // SW
-            ChuteSpec(pos: nePos, yRot: .pi,   color: .systemBlue), // NE
-            ChuteSpec(pos: sePos, yRot: .pi,   color: .systemBlue)  // SE
+            ChuteSpec(pos: nwPos, yRot: 0,    alliance: .red),   // NW
+            ChuteSpec(pos: swPos, yRot: 0,    alliance: .red),   // SW
+            ChuteSpec(pos: nePos, yRot: .pi,  alliance: .blue),  // NE — edit `nePos` above to move this one
+            ChuteSpec(pos: sePos, yRot: .pi,  alliance: .blue),  // SE
         ]
 
         for spec in chuteSpecs {
-            let chute = makeChute(tapeColor: spec.color,
-                                  tapeIntoField: tapeIntoField,
-                                  tapeWidth: tapeWidth)
+            let chute = makeMatchloader(alliance: spec.alliance, masterScene: masterScene)
             chute.position = spec.pos
+            // Authoring rotation around Y so the matchloader's opening faces
+            // into the field. The yRot from the spec flips W-wall chutes to
+            // E-wall chutes; if the asset comes in facing the wrong way,
+            // tweak `matchloaderModelYawOffset` in `makeMatchloader` below.
             chute.orientation = simd_quatf(angle: spec.yRot, axis: [0, 1, 0])
             fieldContainer.addChild(chute)
         }
@@ -92,69 +106,36 @@ enum LoadingZones {
         }
     }
 
-    // Build a chute as if it sits on the W wall (opening toward +X / field).
-    // For the E wall, rotate the whole assembly 180° around Y.
+    // Clone a Matchloader asset from the master Reality Composer Pro scene.
+    // Red alliance → `RedMatchloader`, Blue alliance → `BlueMatchloader`.
+    // Each asset comes with its own scale baked into Scene.usda; we just
+    // wrap it in a holder Entity at the origin and let the spec set the
+    // world transform.
+    //
+    // If the asset comes in too big/small or facing the wrong way,
+    // adjust `matchloaderScale` or `matchloaderModelYawOffset` here —
+    // those are the two knobs that affect every chute uniformly.
     @MainActor
-    private static func makeChute(tapeColor: UIColor,
-                                  tapeIntoField: Float,
-                                  tapeWidth: Float) -> Entity {
-        // Chute body — much smaller, fits inside the U
-        let chuteW: Float = 0.09   // along the wall direction
-        let chuteD: Float = 0.09   // perpendicular into field
-        let chuteH: Float = 0.40
-        let chuteT: Float = 0.005   // wall thickness
-        let chuteBodyMat = SimpleMaterial(color: .lightGray, isMetallic: false)
+    private static func makeMatchloader(alliance: ChuteAlliance,
+                                        masterScene: Entity?) -> Entity {
+        let matchloaderScale: Float = 0.40           // multiplier on top of the .usdz's own scale
+        let matchloaderModelYawOffset: Float = -.pi / 2    // tweak (in radians) if the asset's opening faces wrong way
 
-        let chute = Entity()
-        let topMat = SimpleMaterial(color: tapeColor, isMetallic: false)
-        // Chute body is shifted toward the back (near the perimeter wall side)
-        let bodyOffsetX: Float = -tapeIntoField / 2 + tapeWidth + 0.012 + chuteD / 2
-
-        // Handle that lies on top of the perimeter wall (a person grabs this to lift the loader)
-        let handle = ModelEntity(
-            mesh: .generateBox(size: [chuteT, chuteT, chuteW - 0.02]),
-            materials: [chuteBodyMat]
-        )
-        handle.position = [bodyOffsetX - chuteD / 2 + chuteT, chuteH + chuteT, 0]
-        chute.addChild(handle)
-
-        // Half wall on the field-facing side
-        let front = ModelEntity(
-            mesh: .generateBox(size: [chuteT, chuteH * 0.7, chuteW]),
-            materials: [chuteBodyMat]
-        )
-        front.position = [bodyOffsetX + chuteD / 2 - chuteT / 2, chuteH * 0.65, 0]
-        chute.addChild(front)
-
-        // Two side walls
-        for sideZ in [-(chuteW / 2 - chuteT / 2), (chuteW / 2 - chuteT / 2)] {
-            let side = ModelEntity(
-                mesh: .generateBox(size: [chuteD, chuteH, chuteT]),
-                materials: [chuteBodyMat]
-            )
-            side.position = [bodyOffsetX, chuteH / 2, sideZ]
-            chute.addChild(side)
+        let holder = Entity()
+        let assetName: String = (alliance == .red) ? "RedMatchloader" : "BlueMatchloader"
+        guard let masterScene, let template = masterScene.findEntity(named: assetName) else {
+            print("[RoboSim] Missing matchloader asset: \(assetName) (add it to Scene.usda in Reality Composer Pro)")
+            return holder
         }
-
-        // Colored U-shaped top: 2 parallel strips along X + 1 connecting strip on the field-interior side
-        let topStripT: Float = 0.01
-        let topY: Float = chuteH + topStripT / 2
-        for stripZ: Float in [-(chuteW / 2 - topStripT / 2), (chuteW / 2 - topStripT / 2)] {
-            let strip = ModelEntity(
-                mesh: .generateBox(size: [chuteD, topStripT, topStripT]),
-                materials: [topMat]
-            )
-            strip.position = [bodyOffsetX, topY, stripZ]
-            chute.addChild(strip)
-        }
-        let connect = ModelEntity(
-            mesh: .generateBox(size: [topStripT, topStripT, chuteW]),
-            materials: [topMat]
-        )
-        connect.position = [bodyOffsetX + chuteD / 2 - topStripT / 2, topY, 0]
-        chute.addChild(connect)
-
-        return chute
+        let model = template.clone(recursive: true)
+        // Drop the .usdz translation baked into Scene.usda — we want the
+        // matchloader sitting at the holder's origin so the spec's
+        // chute-position controls placement.
+        model.position = .zero
+        model.scale *= matchloaderScale
+        model.orientation = simd_quatf(angle: matchloaderModelYawOffset, axis: [0, 1, 0]) * model.orientation
+        holder.addChild(model)
+        return holder
     }
 
     // --- LOADER PLATFORMS (alliance-colored slabs just outside W/E walls) -

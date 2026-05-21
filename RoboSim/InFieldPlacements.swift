@@ -13,33 +13,54 @@ enum InFieldPlacements {
 
         // --- Horizontal pins, scattered (no grid) -----------------------
         // (x, z) units = metres, (-1.825, +1.825).
-        let scatteredHorizontalPins: [(SIMD3<Float>, PinHalfColor, PinHalfColor)] = [
+        //
+        // === HORIZONTAL PIN YAW =========================================
+        // `yawDegrees` rotates the pin around world Y so the long axis
+        // points the way you want. Use 0 / 90 / 180 / 270 to snap to a
+        // compass direction (any other angle also works):
+        //
+        //   yawDegrees =   0  → long axis along +X
+        //   yawDegrees =  90  → long axis along +Z
+        //   yawDegrees = 180  → long axis along -X
+        //   yawDegrees = 270  → long axis along -Z
+        //
+        // 360 is equivalent to 0; flips (180) and identity (0) look the
+        // same on a symmetric pin. Change a row's `yawDegrees` to spin
+        // just that pin.
+        // ================================================================
+        struct ScatteredHorizontalPinSpec {
+            let position:    SIMD3<Float>
+            let top:         PinHalfColor
+            let bottom:      PinHalfColor
+            let yawDegrees:  Float          // 0 / 90 / 180 / 270 (or any angle)
+        }
+        let scatteredHorizontalPins: [ScatteredHorizontalPinSpec] = [
             // Around each far cup - Northwest
-            (SIMD3<Float>(-1.05, insideSpawnY, -1.2), .blue, .yellow),
-            (SIMD3<Float>(-1.2, insideSpawnY, -1.05), .red, .yellow),
-            (SIMD3<Float>(-1.2, insideSpawnY, -1.35), .blue, .yellow),
-            (SIMD3<Float>(-1.35, insideSpawnY, -1.2), .red, .yellow),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-1.05, insideSpawnY, -1.2),  top: .blue, bottom: .yellow, yawDegrees: 270),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-1.2,  insideSpawnY, -1.05), top: .red,  bottom: .yellow, yawDegrees: 180),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-1.2,  insideSpawnY, -1.35), top: .blue, bottom: .yellow, yawDegrees: 0),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-1.35, insideSpawnY, -1.2),  top: .red,  bottom: .yellow, yawDegrees: 90),
 
             // Around each near cup - Northwest
-            (SIMD3<Float>(-0.45, insideSpawnY, -0.6), .blue, .yellow),
-            (SIMD3<Float>(-0.6, insideSpawnY, -0.45), .red, .yellow),
-            (SIMD3<Float>(-0.6, insideSpawnY, -0.75), .blue, .yellow),
-            (SIMD3<Float>(-0.75, insideSpawnY, -0.6), .red, .yellow),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-0.45, insideSpawnY, -0.6),  top: .blue, bottom: .yellow, yawDegrees:  270),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-0.6,  insideSpawnY, -0.45), top: .red,  bottom: .yellow, yawDegrees:  180),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-0.6,  insideSpawnY, -0.75), top: .blue, bottom: .yellow, yawDegrees:    0),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(-0.75, insideSpawnY, -0.6),  top: .red,  bottom: .yellow, yawDegrees:   90),
 
             // Around each far cup - Southeast
-            (SIMD3<Float>(1.05, insideSpawnY, 1.2), .red, .yellow),
-            (SIMD3<Float>(1.2, insideSpawnY, 1.05), .blue, .yellow),
-            (SIMD3<Float>(1.2, insideSpawnY, 1.35), .red, .yellow),
-            (SIMD3<Float>(1.35, insideSpawnY, 1.2), .blue, .yellow),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(1.05,  insideSpawnY, 1.2),   top: .red,  bottom: .yellow, yawDegrees:   90),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(1.2,   insideSpawnY, 1.05),  top: .blue, bottom: .yellow, yawDegrees:    0),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(1.2,   insideSpawnY, 1.35),  top: .red,  bottom: .yellow, yawDegrees:  180),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(1.35,  insideSpawnY, 1.2),   top: .blue, bottom: .yellow, yawDegrees:  270),
 
             // Around each near cup - Southeast
-            (SIMD3<Float>(0.45, insideSpawnY, 0.6), .red, .yellow),
-            (SIMD3<Float>(0.6, insideSpawnY, 0.45), .blue, .yellow),
-            (SIMD3<Float>(0.6, insideSpawnY, 0.75), .red, .yellow),
-            (SIMD3<Float>(0.75, insideSpawnY, 0.6), .blue, .yellow),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(0.45,  insideSpawnY, 0.6),   top: .red,  bottom: .yellow, yawDegrees:   90),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(0.6,   insideSpawnY, 0.45),  top: .blue, bottom: .yellow, yawDegrees:    0),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(0.6,   insideSpawnY, 0.75),  top: .red,  bottom: .yellow, yawDegrees:  180),
+            ScatteredHorizontalPinSpec(position: SIMD3<Float>(0.75,  insideSpawnY, 0.6),   top: .blue, bottom: .yellow, yawDegrees:  270),
         ]
         for spec in scatteredHorizontalPins {
-            pins.append((spec.0, spec.1, spec.2, .horizontal))
+            pins.append((spec.position, spec.top, spec.bottom, .horizontal, spec.yawDegrees))
         }
 
         // --- Vertical pins (each one is paired with a cup beneath) ------
@@ -104,7 +125,7 @@ enum InFieldPlacements {
         for spec in inFieldStackPins {
             let stance: PinStance = spec.flipVertical ? .verticalFlipped : .vertical
             pins.append((SIMD3<Float>(spec.x, inFieldPinAboveCup, spec.z),
-                         spec.topColor, spec.bottomColor, stance))
+                         spec.topColor, spec.bottomColor, stance, nil))
         }
     }
 }

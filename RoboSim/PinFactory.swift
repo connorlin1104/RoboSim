@@ -81,7 +81,11 @@ enum PinFactory {
             stanceRotation = simd_quatf(angle: .pi, axis: [0, 0, 1])
                 * simd_quatf(angle: .pi / 2, axis: [1, 0, 0])
         case .horizontal:
-            stanceRotation = simd_quatf()   // identity — source .usdz lies flat by default
+            // Explicit identity quaternion. `simd_quatf()` zero-initializes
+            // to (0,0,0,0), which is NOT identity — composing with it
+            // wipes any subsequent yaw, which is why yawDegrees did
+            // nothing for horizontal pins until this was fixed.
+            stanceRotation = simd_quatf(real: 1, imag: SIMD3<Float>(0, 0, 0))
         }
         let yawRadians: Float
         if let yawDegrees = yawDegrees {

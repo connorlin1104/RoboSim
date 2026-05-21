@@ -58,9 +58,11 @@ enum MatchLoadSpawner {
         }
     }
 
-    // Spawns a "match-loaded" stack inside the field: one cup (open side
-    // up) followed shortly after by an alliance/yellow pin that drops
-    // into the cup's well.
+    // Spawns a "match-loaded" stack inside the field: one upside-down cup
+    // followed immediately by an alliance/yellow pin dropped just above
+    // it. Mirrors the diamond-corner / double-line in-field stacks: cup
+    // and pin spawn together at the same XZ, with the pin starting just
+    // above the cup so it falls into the cup's well as the cup settles.
     //
     // The drop location picks one of the FOUR field-corner chutes based on:
     //   • alliance — RED always drops on the west (X < 0) side, BLUE on
@@ -76,9 +78,10 @@ enum MatchLoadSpawner {
         let halfField = SimulationConstants.halfField
         let matchLoadInsetX:   Float  = 0.45
         let matchLoadInsetZ:   Float  = 0.45
-        let cupDropY:          Float  = 0.2
-        let pinDropY:          Float  = 0.2
-        let stackDelaySeconds: Double = 0.5    // long enough for the cup to actually settle
+        // Match the in-field stack drop heights so behaviour is identical
+        // to the diamond / double-line stacks the user verified working.
+        let cupDropY:          Float  = 0.1     // == InFieldPlacements.inFieldCupY
+        let pinDropY:          Float  = 0.21    // == InFieldPlacements.inFieldPinAboveCup
 
         // X side is set by the alliance — red on west, blue on east.
         let dropX: Float = alliance == .red
@@ -89,39 +92,22 @@ enum MatchLoadSpawner {
         ?  halfField - matchLoadInsetZ / 2 - 0.08
         : -halfField + matchLoadInsetZ / 2 + 0.08
 
-        // 1) Drop the cup right-side-up so its open side faces the
-        //    incoming pin. With the hollow cup collider, the pin falls
-        //    into the cup's well.
-        let spawnedCup = CupFactory.makeCup(at: SIMD3<Float>(dropX, cupDropY, dropZ),
-                                            upsideDown: false,
-                                            surfaceMaterial: surfaceMaterial,
-                                            scene: masterScene)
-        if let cup = spawnedCup {
+        // 1) Drop the cup upside-down so the hollow well faces up — the
+        //    same orientation the diamond/double-line stacks use.
+        if let cup = CupFactory.makeCup(at: SIMD3<Float>(dropX, cupDropY, dropZ),
+                                        upsideDown: true,
+                                        surfaceMaterial: surfaceMaterial,
+                                        scene: masterScene) {
             fieldContainer.addChild(cup)
         }
-        // 2) After the cup has settled, drop an alliance/yellow pin
-        //    directly above the cup's CURRENT XZ. (Yellow/yellow pins are
-        //    decor-only — never spawned here.)
-        Task { @MainActor in
-            try? await Task.sleep(nanoseconds: UInt64(stackDelaySeconds * 1_000_000_000))
-            let pinX: Float
-            let pinZ: Float
-            let pinY: Float
-            if let cup = spawnedCup {
-                let cupNow = cup.position(relativeTo: nil)
-                pinX = cupNow.x
-                pinZ = cupNow.z
-                pinY = cupNow.y + 0.30   // constant offset above the cup's current Y
-            } else {
-                pinX = dropX; pinZ = dropZ; pinY = pinDropY
-            }
-            if let p = PinFactory.makePin(top: alliance, bottom: .yellow,
-                                          at: SIMD3<Float>(pinX, pinY, pinZ),
-                                          stance: .vertical, scene: masterScene) {
-                fieldContainer.addChild(p.entity)
-                // Not appended to `gamePins` — match-loaded stacks aren't
-                // tracked for fall-off-the-field respawn.
-            }
+        // 2) Drop the pin in the same frame at the same XZ. (Yellow/yellow
+        //    pins are decor-only — never spawned here.) Not appended to
+        //    `gamePins` — match-loaded stacks aren't tracked for fall-off-
+        //    the-field respawn.
+        if let p = PinFactory.makePin(top: alliance, bottom: .yellow,
+                                      at: SIMD3<Float>(dropX, pinDropY, dropZ),
+                                      stance: .vertical, scene: masterScene) {
+            fieldContainer.addChild(p.entity)
         }
     }
 }

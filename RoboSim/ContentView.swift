@@ -112,17 +112,22 @@ struct ContentView: View {
                                     surfaceMaterial: PhysicsMaterialResource) async {
         let fieldContainer = Entity()
 
-        // --- Static field structure (no master scene required) -----------
+        // --- Load the master Reality Composer Pro scene first so the
+        // --- matchloader assets are available to LoadingZones ------------
+        let masterScene = try? await Entity(named: "Scene", in: roboticsSimulationAssetsBundle)
+
+        // --- Static field structure --------------------------------------
         FieldStructure.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)
         Goals.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)
         Toggles.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)
-        let platform = LoadingZones.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)
+        let platform = LoadingZones.build(into: fieldContainer,
+                                          surfaceMaterial: surfaceMaterial,
+                                          masterScene: masterScene)
 
         // --- Pregame game piece placements -------------------------------
         let placements = Placements.compute(platform: platform)
 
-        // --- Load the master Reality Composer Pro scene + spawn pieces ---
-        guard let masterScene = try? await Entity(named: "Scene", in: roboticsSimulationAssetsBundle) else {
+        guard let masterScene = masterScene else {
             content.add(fieldContainer)
             return
         }
@@ -133,6 +138,7 @@ struct ContentView: View {
                                           bottom: placement.bottom,
                                           at: placement.position,
                                           stance: placement.stance,
+                                          yawDegrees: placement.yawDegrees,
                                           isStatic: false,
                                           scene: masterScene) {
                 fieldContainer.addChild(p.entity)
@@ -140,9 +146,7 @@ struct ContentView: View {
             }
         }
 
-        // Spawn cups. Index by initial XZ so deferred pin drops can target
-        // the cup's actual resting XZ (cups drift a bit when they land).
-        var cupsByInitialXZ: [SIMD2<Float>: Entity] = [:]
+        // Spawn cups.
         for placement in placements.cups {
             if let cup = CupFactory.makeCup(at: placement.position,
                                             upsideDown: placement.upsideDown,
@@ -150,35 +154,6 @@ struct ContentView: View {
                                             surfaceMaterial: surfaceMaterial,
                                             scene: masterScene) {
                 fieldContainer.addChild(cup)
-                cupsByInitialXZ[SIMD2<Float>(placement.position.x, placement.position.z)] = cup
-            }
-        }
-
-        // Deferred pin drop on top of wall cups, ~0.6 s after the cups land.
-        let deferredStackPins = placements.deferredWallStackPins
-        if !deferredStackPins.isEmpty {
-            Task { @MainActor in
-                try? await Task.sleep(nanoseconds: 600_000_000)
-                for pos in deferredStackPins {
-                    let key = SIMD2<Float>(pos.x, pos.z)
-                    let dropX: Float
-                    let dropZ: Float
-                    let dropY: Float
-                    if let cup = cupsByInitialXZ[key] {
-                        let cupNow = cup.position(relativeTo: nil)
-                        dropX = cupNow.x
-                        dropZ = cupNow.z
-                        // Constant offset above the cup's CURRENT Y.
-                        dropY = cupNow.y + 0.30
-                    } else {
-                        dropX = pos.x; dropZ = pos.z; dropY = pos.y
-                    }
-                    if let p = PinFactory.makePin(top: .yellow, bottom: .yellow,
-                                                  at: SIMD3<Float>(dropX, dropY, dropZ),
-                                                  stance: .vertical, scene: masterScene) {
-                        fieldContainer.addChild(p.entity)
-                    }
-                }
             }
         }
 
