@@ -10,14 +10,18 @@
 
 def Xform "Root"
 {
-    reorder nameChildren = ["RedBluePin", "YellowYellowPin", "RedYellowPin", "BlueYellowPin"]
+    reorder nameChildren = ["RedBluePin", "YellowYellowPin", "RedYellowPin", "BlueYellowPin", "cupModel", "RedMatchloader", "BlueMatchloader"]
     def "RedBluePin" (
         active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
         references = @cadPinModel.usdz@
     )
     {
+        rel material:binding = </Root/RedBluePin/Materials/topHalf> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
         float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
-        float3 xformOp:translate = (0, 0, -0.50006896)
+        float3 xformOp:translate = (-0.50279224, 0, 1.3976291)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
         over "Materials"
@@ -104,6 +108,7 @@ def Xform "Root"
             bindMaterialAs = "weakerThanDescendants"
         )
         float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        float3 xformOp:translate = (0.07904332, 0.1176603, 1.406189)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
         over "Materials"
@@ -140,6 +145,43 @@ def Xform "Root"
                 }
             }
         }
+
+        def RealityKitComponent "RigidBody"
+        {
+            uniform token info:id = "RealityKit.RigidBody"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (8.000282, 7.69621, 16.50315)
+                float height = 7.69621
+                float radius = 8.251575
+                token shapeType = "Capsule"
+
+                def RealityKitStruct "pose"
+                {
+                    float3 position = (-0.0000150203705, -0.17430961, 0.00080013275)
+                }
+            }
+        }
     }
 
     def "RedYellowPin" (
@@ -152,7 +194,7 @@ def Xform "Root"
             bindMaterialAs = "weakerThanDescendants"
         )
         float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
-        float3 xformOp:translate = (0.24921557, 0, 0)
+        float3 xformOp:translate = (0.24921557, 0, 1.4025555)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
         over "Materials"
@@ -189,6 +231,43 @@ def Xform "Root"
                 }
             }
         }
+
+        def RealityKitComponent "RigidBody"
+        {
+            uniform token info:id = "RealityKit.RigidBody"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (8.000282, 7.69621, 16.50315)
+                float height = 7.69621
+                float radius = 8.251575
+                token shapeType = "Capsule"
+
+                def RealityKitStruct "pose"
+                {
+                    float3 position = (-0.0000150203705, -0.17430961, 0.00080013275)
+                }
+            }
+        }
     }
 
     def "BlueYellowPin" (
@@ -201,7 +280,7 @@ def Xform "Root"
             bindMaterialAs = "weakerThanDescendants"
         )
         float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
-        float3 xformOp:translate = (-0.25714585, 0, 0)
+        float3 xformOp:translate = (-0.25714585, 0, 1.4025555)
         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
         over "Materials"
@@ -235,6 +314,284 @@ def Xform "Root"
                     color3f inputs:emissiveColor = (1, 0.93339235, 0) (
                         colorSpace = "srgb_displayp3"
                     )
+                }
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            uniform token info:id = "RealityKit.RigidBody"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (8.000282, 7.69621, 16.50315)
+                float height = 7.69621
+                float radius = 8.251575
+                token shapeType = "Capsule"
+
+                def RealityKitStruct "pose"
+                {
+                    float3 position = (-0.0000150203705, -0.17430961, 0.00080013275)
+                }
+            }
+        }
+    }
+
+    def "cupModel" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        references = @cupModel.usdz@
+    )
+    {
+        rel material:binding = </Root/cupModel/Materials/topHalf> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        float3 xformOp:translate = (0.88595253, 0, 1.3707567)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Materials"
+        {
+            over "topHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "topHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0.7875195, 0.7875195, 0.7875195) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0.33267027, 0.3392578, 0.3392578) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    float inputs:opacity = 0.5
+                }
+            }
+
+            over "bottomHalf"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "bottomHalfPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0.119628906, 0.119628906, 0.119628906) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0.05328618, 0.053808592, 0.053808592) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            uniform token info:id = "RealityKit.RigidBody"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider" (
+            active = false
+        )
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (8.047724, 8.05061, 16.50858)
+                float height = 8.05061
+                float radius = 8.25429
+                token shapeType = "Capsule"
+
+                def RealityKitStruct "pose"
+                {
+                    float3 position = (0.01077652, 0.018906593, 0.002861023)
+                }
+            }
+        }
+    }
+
+    def "RedMatchloader" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        references = @Matchloader.usdz@
+    )
+    {
+        rel material:binding = </Root/RedMatchloader/Materials/BlackMaterial> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        float3 xformOp:translate = (0.762, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Materials"
+        {
+            over "BlackMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "BlackMaterialPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "ALLMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "ALLMaterialPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "ColoredMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "ColoredMaterialPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0.9063318, 0.025201121, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (1, 0.018539993, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "ClearedMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "ClearedMaterialPreviewSurface"
+                {
+                    float inputs:opacity = 0.2
+                }
+            }
+        }
+    }
+
+    def "BlueMatchloader" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        references = @Matchloader.usdz@
+    )
+    {
+        rel material:binding = </Root/RedMatchloader/Materials/ALLMaterial> (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        float3 xformOp:scale = (0.0254, 0.0254, 0.0254)
+        float3 xformOp:translate = (1.27, 0, 0)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        over "Materials"
+        {
+            over "BlackMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "BlackMaterialPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "ALLMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "ALLMaterialPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0, 0, 0) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "ColoredMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "ColoredMaterialPreviewSurface"
+                {
+                    color3f inputs:diffuseColor = (0.0006409551, 0.035365377, 0.9063318) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                    color3f inputs:emissiveColor = (0.03758353, 0.0011317555, 1) (
+                        colorSpace = "srgb_displayp3"
+                    )
+                }
+            }
+
+            over "ClearedMaterial"
+            {
+                token outputs:mtlx:surface
+                token outputs:realitykit:vertex
+
+                over "ClearedMaterialPreviewSurface"
+                {
+                    float inputs:opacity = 0.2
                 }
             }
         }
