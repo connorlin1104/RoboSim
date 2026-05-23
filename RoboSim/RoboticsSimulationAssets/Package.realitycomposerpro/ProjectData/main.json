@@ -1,10 +1,12 @@
 {
   "pathsToIds" : {
     "\/RoboticsSimulationAssets\/Sources\/RoboticsSimulationAssets\/RoboticsSimulationAssets.rkassets\/Scene.usda" : "03317E4B-C806-4C03-9992-89E0B63E34BD",
+    "\/RoboticsSimulationAssets\/Sources\/RoboticsSimulationAssets\/RoboticsSimulationAssets.rkassets\/VEX_Override_Field.usda" : "55A1AA3A-5826-4F66-9650-5F7913473C73",
     "RoboticsSimulationAssets\/Sources\/RoboticsSimulationAssets\/RoboticsSimulationAssets.rkassets\/Scene.usda" : "86187E13-085A-46FE-B509-C5B9370BBBE6"
   },
   "projectID" : 5247011081396867586,
   "uuidToIntID" : {
+    "55A1AA3A-5826-4F66-9650-5F7913473C73" : 6491649414331023477,
     "86187E13-085A-46FE-B509-C5B9370BBBE6" : -5317202675331256959
   }
 }
