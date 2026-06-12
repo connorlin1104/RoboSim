@@ -124,7 +124,9 @@ enum LoadingZones {
         let holder = Entity()
         let assetName: String = (alliance == .red) ? "RedMatchloader" : "BlueMatchloader"
         guard let masterScene, let template = masterScene.findEntity(named: assetName) else {
-            print("[RoboSim] Missing matchloader asset: \(assetName) (add it to Scene.usda in Reality Composer Pro)")
+            if SimulationConstants.useLegacyRCPScene {
+                print("[RoboSim] Missing matchloader asset: \(assetName) (add it to Scene.usda in Reality Composer Pro)")
+            }
             return holder
         }
         let model = template.clone(recursive: true)

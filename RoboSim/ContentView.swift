@@ -114,7 +114,12 @@ struct ContentView: View {
 
         // --- Load the master Reality Composer Pro scene first so the
         // --- matchloader assets are available to LoadingZones ------------
-        let masterScene = try? await Entity(named: "Scene", in: roboticsSimulationAssetsBundle)
+        // Gated by `useLegacyRCPScene` so we don't even attempt the load
+        // (and don't print "Missing X asset" warnings downstream) while
+        // the asset library is being migrated.
+        let masterScene: Entity? = SimulationConstants.useLegacyRCPScene
+            ? (try? await Entity(named: "Scene", in: roboticsSimulationAssetsBundle))
+            : nil
 
         // --- Static field structure --------------------------------------
         FieldStructure.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)

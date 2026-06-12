@@ -24,6 +24,14 @@ enum SimulationConstants {
     static let wallThickness:  Float = 0.05
     static var halfField:      Float { fieldSize / 2 }
     static var tileSize:       Float { fieldSize / 6 }
+
+    // When true, ContentView loads the legacy Reality Composer Pro "Scene"
+    // master entity and uses it to spawn pins / cups / matchloaders. When
+    // false (current default), the legacy path is skipped silently so the
+    // app runs cleanly while assets are being migrated to the exported
+    // FullField/VEX_Override_Field flow. Flip back to true to revert to
+    // the RCP-master strategy without deleting any code.
+    static let useLegacyRCPScene: Bool = false
 }
 
 // MARK: - Drive Input (shared between SwiftUI and RealityKit)
