@@ -1,0 +1,11 @@
+{
+  "pathsToIds" : {
+    "\/Field_Model\/Sources\/Field_Model\/Field_Model.rkassets\/Scene.usda" : "C5794F1E-AC24-4E60-B301-45CE7522AD3E",
+    "Match_Simulator\/Sources\/Field_Model\/Field_Model.rkassets\/Scene.usda" : "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA"
+  },
+  "projectID" : -6518479197919427403,
+  "uuidToIntID" : {
+    "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA" : -4891042630742349717,
+    "C5794F1E-AC24-4E60-B301-45CE7522AD3E" : -8218014067626837698
+  }
+}

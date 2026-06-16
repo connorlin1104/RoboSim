@@ -1,13 +1,12 @@
 import SwiftUI
 import RealityKit
-import RoboticsSimulationAssets
+import Field_Model
 
 struct ContentView: View {
     @State private var cameraMode: CameraMode = .thirdPerson
     @State private var leftStickOffset: CGSize = .zero
     @State private var rightStickOffset: CGSize = .zero
     @State private var driveInput = DriveInput()
-    @State private var matchLoad = MatchLoadController()
 
     var body: some View {
         ZStack {
@@ -24,8 +23,7 @@ struct ContentView: View {
 
             HUDOverlay(leftStickOffset: $leftStickOffset,
                        rightStickOffset: $rightStickOffset,
-                       cameraMode: $cameraMode,
-                       matchLoad: matchLoad)
+                       cameraMode: $cameraMode)
         }
         .onChange(of: leftStickOffset) { _, newValue in
             driveInput.forward = max(-1, min(1, Float(-newValue.height / SimulationConstants.joystickRadius)))
@@ -44,13 +42,12 @@ struct ContentView: View {
         FollowCameraSystem.registerSystem()
         FollowCameraComponent.registerComponent()
 
-        // Shared surface material — gives floor/walls grip so loose game
-        // pieces settle. The robot ignores friction while upright because
-        // its velocity is set directly each frame; once tipped it falls
-        // back on physics + this friction to stop sliding.
+        // Shared surface material — gives the robot grip once it tips
+        // and falls onto the floor. While upright the robot's velocity is
+        // set directly each frame so friction doesn't matter.
         let surfaceMaterial = PhysicsMaterialResource.generate(friction: 0.5, restitution: 0)
 
-        await setupRoboticsField(content: &content, surfaceMaterial: surfaceMaterial)
+        await setupRoboticsField(content: &content)
 
         // --- ROBOT ---
         let robotEntity = RobotBuilder.build(surfaceMaterial: surfaceMaterial)
@@ -108,68 +105,16 @@ struct ContentView: View {
 
     #if os(iOS) || os(macOS)
     @MainActor
-    private func setupRoboticsField(content: inout RealityViewCameraContent,
-                                    surfaceMaterial: PhysicsMaterialResource) async {
-        let fieldContainer = Entity()
-
-        // --- Load the master Reality Composer Pro scene first so the
-        // --- matchloader assets are available to LoadingZones ------------
-        // Gated by `useLegacyRCPScene` so we don't even attempt the load
-        // (and don't print "Missing X asset" warnings downstream) while
-        // the asset library is being migrated.
-        let masterScene: Entity? = SimulationConstants.useLegacyRCPScene
-            ? (try? await Entity(named: "Scene", in: roboticsSimulationAssetsBundle))
-            : nil
-
-        // --- Static field structure --------------------------------------
-        FieldStructure.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)
-        Goals.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)
-        Toggles.build(into: fieldContainer, surfaceMaterial: surfaceMaterial)
-        let platform = LoadingZones.build(into: fieldContainer,
-                                          surfaceMaterial: surfaceMaterial,
-                                          masterScene: masterScene)
-
-        // --- Pregame game piece placements -------------------------------
-        let placements = Placements.compute(platform: platform)
-
-        guard let masterScene = masterScene else {
-            content.add(fieldContainer)
+    private func setupRoboticsField(content: inout RealityViewCameraContent) async {
+        // The Match_Simulator package's Scene.usda is the whole world:
+        // Floor_Physics + N/S/E/W Wall_Physics give the static perimeter,
+        // and Field_Master/OverRideFieldCleaned is the visual art plus
+        // baked-in pin physics. Cup and goal physics are still TODO
+        // (hollow shapes are harder to author by hand).
+        guard let masterScene = try? await Entity(named: "Scene", in: field_ModelBundle) else {
             return
         }
-
-        var gamePins: [GamePin] = []
-        for placement in placements.pins {
-            if let p = PinFactory.makePin(top: placement.top,
-                                          bottom: placement.bottom,
-                                          at: placement.position,
-                                          stance: placement.stance,
-                                          yawDegrees: placement.yawDegrees,
-                                          isStatic: false,
-                                          scene: masterScene) {
-                fieldContainer.addChild(p.entity)
-                gamePins.append(p)
-            }
-        }
-
-        // Spawn cups.
-        for placement in placements.cups {
-            if let cup = CupFactory.makeCup(at: placement.position,
-                                            upsideDown: placement.upsideDown,
-                                            isStatic: false,
-                                            surfaceMaterial: surfaceMaterial,
-                                            scene: masterScene) {
-                fieldContainer.addChild(cup)
-            }
-        }
-
-        MatchLoadSpawner.attachUpdateLoop(content: content,
-                                          fieldContainer: fieldContainer,
-                                          masterScene: masterScene,
-                                          surfaceMaterial: surfaceMaterial,
-                                          respawnPins: gamePins,
-                                          matchLoad: matchLoad)
-
-        content.add(fieldContainer)
+        content.add(masterScene)
     }
     #endif
 }

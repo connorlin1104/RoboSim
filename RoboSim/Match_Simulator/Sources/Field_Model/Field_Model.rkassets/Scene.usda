@@ -1,0 +1,2195 @@
+#usda 1.0
+(
+    customLayerData = {
+        string creator = "Reality Composer Pro Version 2.0 (494.100.6)"
+    }
+    defaultPrim = "Root"
+    metersPerUnit = 1
+    upAxis = "Y"
+)
+
+def Xform "Root"
+{
+    reorder nameChildren = ["Floor_Physics", "SouthWall_Physics", "NorthWall_Physics", "EastWall_Physics", "WestWall_Physics", "Field_Master", "Goal_Template", "Cup_Template"]
+    def Cube "Floor_Physics" (
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = None (
+            bindMaterialAs = "weakerThanDescendants"
+        )
+        double size = 0.2
+        quatf xformOp:orient = (1, 0, 0, 0)
+        float3 xformOp:scale = (18, 0.1, 18)
+        float3 xformOp:translate = (0, 0.01, 1.8)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Material "DefaultMaterial"
+        {
+            token outputs:surface.connect = </Root/Floor_Physics/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+
+            def Shader "DefaultSurfaceShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            bool gravityEnabled = 0
+            uniform token info:id = "RealityKit.RigidBody"
+            token motionType = "Static"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (0.2, 0.2, 0.2)
+                token shapeType = "Box"
+
+                def RealityKitStruct "pose"
+                {
+                }
+            }
+        }
+    }
+
+    def Cube "SouthWall_Physics" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </Root/SouthWall_Physics/DefaultMaterial>
+        double size = 0.2
+        quatf xformOp:orient = (1, 0, 0, 0)
+        float3 xformOp:scale = (18, 1.5, 0.2)
+        float3 xformOp:translate = (0, 0.16, 3.61)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Material "DefaultMaterial"
+        {
+            token outputs:surface.connect = </Root/SouthWall_Physics/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+
+            def Shader "DefaultSurfaceShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            bool gravityEnabled = 0
+            uniform token info:id = "RealityKit.RigidBody"
+            token motionType = "Static"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (0.2, 0.2, 0.2)
+                token shapeType = "Box"
+
+                def RealityKitStruct "pose"
+                {
+                }
+            }
+        }
+    }
+
+    def Cube "NorthWall_Physics" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+    )
+    {
+        rel material:binding = </Root/NorthWall_Physics/DefaultMaterial>
+        double size = 0.2
+        float2 ui:nodegraph:node:pos = (20, 20)
+        int ui:nodegraph:node:stackingOrder = 1
+        quatf xformOp:orient = (1, 0, 0, 0)
+        float3 xformOp:scale = (18, 1.5, 0.2)
+        float3 xformOp:translate = (0, 0.16, -0.01)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Material "DefaultMaterial"
+        {
+            token outputs:surface.connect = </Root/NorthWall_Physics/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+
+            def Shader "DefaultSurfaceShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            bool gravityEnabled = 0
+            uniform token info:id = "RealityKit.RigidBody"
+            token motionType = "Static"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (0.2, 0.2, 0.2)
+                token shapeType = "Box"
+
+                def RealityKitStruct "pose"
+                {
+                }
+            }
+        }
+    }
+
+    def Cube "EastWall_Physics" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        customData = {
+            float3 rotationEulerHint = (0, 1.5707963, 0)
+        }
+    )
+    {
+        rel material:binding = </Root/EastWall_Physics/DefaultMaterial>
+        double size = 0.2
+        float2 ui:nodegraph:node:pos = (40, 40)
+        int ui:nodegraph:node:stackingOrder = 2
+        quatf xformOp:orient = (0.70710677, 0, 0.70710677, 0)
+        float3 xformOp:scale = (18, 1.5, 0.2)
+        float3 xformOp:translate = (1.81, 0.16, 1.8)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Material "DefaultMaterial"
+        {
+            token outputs:surface.connect = </Root/EastWall_Physics/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+
+            def Shader "DefaultSurfaceShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            bool gravityEnabled = 0
+            uniform token info:id = "RealityKit.RigidBody"
+            token motionType = "Static"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (0.2, 0.2, 0.2)
+                token shapeType = "Box"
+
+                def RealityKitStruct "pose"
+                {
+                }
+            }
+        }
+    }
+
+    def Cube "WestWall_Physics" (
+        active = true
+        prepend apiSchemas = ["MaterialBindingAPI"]
+        customData = {
+            float3 rotationEulerHint = (0, 1.5707963, 0)
+        }
+    )
+    {
+        rel material:binding = </Root/WestWall_Physics/DefaultMaterial>
+        double size = 0.2
+        float2 ui:nodegraph:node:pos = (60, 60)
+        int ui:nodegraph:node:stackingOrder = 3
+        quatf xformOp:orient = (0.70710677, 0, 0.70710677, 0)
+        float3 xformOp:scale = (17.999996, 1.4999998, 0.19999996)
+        float3 xformOp:translate = (-1.81, 0.16, 1.8)
+        uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+        def Material "DefaultMaterial"
+        {
+            token outputs:surface.connect = </Root/WestWall_Physics/DefaultMaterial/DefaultSurfaceShader.outputs:surface>
+
+            def Shader "DefaultSurfaceShader"
+            {
+                uniform token info:id = "UsdPreviewSurface"
+                color3f inputs:diffuseColor = (1, 1, 1)
+                float inputs:roughness = 0.75
+                token outputs:surface
+            }
+        }
+
+        def RealityKitComponent "RigidBody"
+        {
+            bool gravityEnabled = 0
+            uniform token info:id = "RealityKit.RigidBody"
+            token motionType = "Static"
+
+            def RealityKitStruct "massFrame"
+            {
+                def RealityKitStruct "m_pose"
+                {
+                }
+            }
+
+            def RealityKitStruct "material"
+            {
+            }
+        }
+
+        def RealityKitComponent "Collider"
+        {
+            uint group = 1
+            uniform token info:id = "RealityKit.Collider"
+            uint mask = 4294967295
+            token type = "Default"
+
+            def RealityKitStruct "Shape"
+            {
+                float3 extent = (0.2, 0.2, 0.2)
+                token shapeType = "Box"
+
+                def RealityKitStruct "pose"
+                {
+                }
+            }
+        }
+    }
+
+    def Xform "Field_Master" (
+        active = true
+    )
+    {
+        def "OverRideFieldCleaned" (
+            active = true
+            references = @VEX_Field_Model/OverRideFieldCleaned.usdc@
+        )
+        {
+            quatf xformOp:orient = (0.70710677, -0.7071067, 0, 0)
+            float3 xformOp:scale = (0.99999994, 0.99999994, 0.99999994)
+            float3 xformOp:translate = (0, 0, 1.8)
+            uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+            over "Field_Stationary"
+            {
+                over "Body1_290"
+                {
+                }
+            }
+
+            over "Goals_and_Pins"
+            {
+                over "Pins_031"
+                {
+                    quatf xformOp:orient = (0.5, -0.5, -0.5, 0.5)
+                    float3 xformOp:scale = (0.010000001, 0.010000001, 0.010000001)
+                    double3 xformOp:translate = (0, 0, 0)
+                    uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
+
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027693, 16.499996, 7.6730347)
+                            float height = 16.499996
+                            float radius = 4.0138464
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (0.7719414, 26.146723, 174.13806)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_011"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.80585, 116.02163, 71.550514)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_034"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499996, 7.6730347)
+                            float height = 16.499996
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.805855, -26.14675, 233.172)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_007"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-59.805855, 26.146729, -59.205772)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_029"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (85.1241, -28.025024, -84.204285)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_020"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.673019)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (60.577805, -114.35498, 9.938396)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_024"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-119.61169, -171.38461, -5.3136683)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_035"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.805855, 26.14674, 115.10415)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_019"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499985, 7.6730194)
+                            float height = 16.499985
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (119.611694, 59.71682, 56.492325)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_021"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499998, 7.6730194)
+                            float height = 16.499998
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.80584, 1.9623258, 41.046402)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_009"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027694, 16.5, 7.673019)
+                            float height = 16.5
+                            float radius = 4.013847
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-0.7719337, -26.146732, -0.17185712)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_022"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027692, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.013846
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (0.77194154, -56.55876, 25.395462)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_032"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499996, 7.6730194)
+                            float height = 16.499996
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.805836, -26.146742, 115.10416)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_027"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499996, 7.6730347)
+                            float height = 16.499996
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-118.83975, 26.146723, 174.13809)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_010"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.805855, -26.146732, 58.862053)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_012"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-119.6117, -57.325348, 25.19045)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_023"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.02771, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.013855
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-178.64563, 116.74645, 71.74438)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_005"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027693, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138464
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-0.7719362, 26.146729, 59.633995)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_017"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-118.83977, 56.558754, 25.39547)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499996, 7.6730347)
+                            float height = 16.499996
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.805817, 26.14675, 233.17197)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_002"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.02771, 16.5, 7.6730347)
+                            float height = 16.5
+                            float radius = 4.013855
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-168.6107, -28.02499, -84.204285)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_030"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-41.743298, -20.405, -41.915146)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_025"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-118.8398, 58.99196, 56.298447)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_013"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-60.57778, 116.746475, 71.74438)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_026"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-59.80584, -113.58839, 10.143404)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_014"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.500002, 7.6730194)
+                            float height = 16.500002
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-59.80585, 0.47088313, 40.647526)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_033"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027693, 16.499996, 7.6730347)
+                            float height = 16.499996
+                            float radius = 4.0138464
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (0.7719257, -26.146723, 174.13806)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_003"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (85.124115, 28.02499, -0.7176919)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_028"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730347)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (119.61167, 26.146744, 178.47375)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_015"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027693, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138464
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-0.7719289, 58.991974, 56.298454)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_006"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-60.57779, 26.146725, 119.43985)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_018"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (119.6117, 173.77612, 86.99642)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_016"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.02771, 16.5, 7.673019)
+                            float height = 16.5
+                            float radius = 4.013855
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (178.64558, -114.35502, 9.938389)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_008"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499996, 7.6730185)
+                            float height = 16.499996
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (118.83976, 26.146734, -0.171852)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_001"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.5, 7.6730194)
+                            float height = 16.5
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.805862, 26.14674, 118.6679)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_036"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.027695, 16.499996, 7.6730347)
+                            float height = 16.499996
+                            float radius = 4.0138474
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (118.83975, 26.146723, 174.13809)
+                            }
+                        }
+                    }
+                }
+
+                over "Pins_004"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        uniform token info:id = "RealityKit.RigidBody"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (8.02771, 16.5, 7.6730266)
+                            float height = 16.5
+                            float radius = 4.013855
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-168.61069, 28.025032, -0.71769214)
+                            }
+                        }
+                    }
+                }
+            }
+
+            over "Rollers_Parent"
+            {
+                over "SouthRoller"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (65.62001, 5.1593704, 5.526001)
+                            float height = 5.1593704
+                            float radius = 32.81
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (0, -128.78589, 203.62558)
+                            }
+                        }
+                    }
+                }
+
+                over "WestRoller"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (65.62001, 5.159378, 5.526001)
+                            float height = 5.15937
+                            float radius = 32.81
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.033897, -99.26893, 152.50073)
+                            }
+                        }
+                    }
+                }
+
+                over "NorthRoller"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (65.62001, 5.159363, 5.526001)
+                            float height = 5.15937
+                            float radius = 32.81
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-0.0000019073486, -69.75197, -101.37583)
+                            }
+                        }
+                    }
+                }
+
+                over "EastRoller"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (65.62, 5.159378, 5.526001)
+                            float height = 5.15937
+                            float radius = 32.81
+                            token shapeType = "Capsule"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (59.033924, -99.26892, -152.5007)
+                            }
+                        }
+                    }
+                }
+            }
+
+            over "MatchLoaders"
+            {
+                over "BlueMatchLoader_001"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (11.228882, 36.5, 13.697449)
+                            token shapeType = "Box"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-208.29243, -24.625, 175.66849)
+                            }
+                        }
+                    }
+                }
+
+                over "RedMatchLoader_001"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (11.228882, 36.5, 13.697449)
+                            token shapeType = "Box"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (208.2924, -23.839561, 175.66849)
+                            }
+                        }
+                    }
+                }
+
+                over "RedMatchLoader"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (11.228867, 36.5, 13.697449)
+                            token shapeType = "Box"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (-90.22459, -23.839561, 175.6685)
+                            }
+                        }
+                    }
+                }
+
+                over "BlueMatchLoader"
+                {
+                    def RealityKitComponent "RigidBody"
+                    {
+                        bool gravityEnabled = 0
+                        uniform token info:id = "RealityKit.RigidBody"
+                        token motionType = "Kinematic"
+
+                        def RealityKitStruct "massFrame"
+                        {
+                            def RealityKitStruct "m_pose"
+                            {
+                            }
+                        }
+
+                        def RealityKitStruct "material"
+                        {
+                        }
+                    }
+
+                    def RealityKitComponent "Collider"
+                    {
+                        uint group = 1
+                        uniform token info:id = "RealityKit.Collider"
+                        uint mask = 4294967295
+                        token type = "Default"
+
+                        def RealityKitStruct "Shape"
+                        {
+                            float3 extent = (11.228867, 36.5, 13.697449)
+                            token shapeType = "Box"
+
+                            def RealityKitStruct "pose"
+                            {
+                                float3 position = (90.22459, -24.625, 175.6685)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    def Xform "Goal_Template" (
+        active = true
+    )
+    {
+        reorder nameChildren = ["Capsule", "Cylinder"]
+    }
+
+    def Xform "Cup_Template" (
+        active = true
+    )
+    {
+    }
+}
+

@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B329C7E82FBA2A1800C19641 /* RoboticsSimulationAssets in Frameworks */ = {isa = PBXBuildFile; productRef = B329C7E72FBA2A1800C19641 /* RoboticsSimulationAssets */; };
+		B38BF7022FE1338900262FC5 /* Field_Model in Frameworks */ = {isa = PBXBuildFile; productRef = B38BF7012FE1338900262FC5 /* Field_Model */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,22 +33,9 @@
 		B33E47342FAEA04F0092E99B /* RoboSimUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoboSimUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B329C7E52FBA27DC00C19641 /* Exceptions for "RoboSim" folder in "RoboSim" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				RoboticsSimulationAssets,
-			);
-			target = B33E471C2FAEA04C0092E99B /* RoboSim */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		B33E471F2FAEA04C0092E99B /* RoboSim */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				B329C7E52FBA27DC00C19641 /* Exceptions for "RoboSim" folder in "RoboSim" target */,
-			);
 			path = RoboSim;
 			sourceTree = "<group>";
 		};
@@ -69,7 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B329C7E82FBA2A1800C19641 /* RoboticsSimulationAssets in Frameworks */,
+				B38BF7022FE1338900262FC5 /* Field_Model in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -130,7 +117,7 @@
 			);
 			name = RoboSim;
 			packageProductDependencies = (
-				B329C7E72FBA2A1800C19641 /* RoboticsSimulationAssets */,
+				B38BF7012FE1338900262FC5 /* Field_Model */,
 			);
 			productName = RoboSim;
 			productReference = B33E471D2FAEA04C0092E99B /* ConnorLinRoboSim.app */;
@@ -215,7 +202,7 @@
 			mainGroup = B33E47142FAEA04B0092E99B;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				B329C7E62FBA2A1700C19641 /* XCLocalSwiftPackageReference "RoboSim/RoboticsSimulationAssets" */,
+				B38BF7002FE1338900262FC5 /* XCLocalSwiftPackageReference "RoboSim/Match_Simulator" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = B33E471E2FAEA04C0092E99B /* Products */;
@@ -602,16 +589,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		B329C7E62FBA2A1700C19641 /* XCLocalSwiftPackageReference "RoboSim/RoboticsSimulationAssets" */ = {
+		B38BF7002FE1338900262FC5 /* XCLocalSwiftPackageReference "RoboSim/Match_Simulator" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = RoboSim/RoboticsSimulationAssets;
+			relativePath = RoboSim/Match_Simulator;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B329C7E72FBA2A1800C19641 /* RoboticsSimulationAssets */ = {
+		B38BF7012FE1338900262FC5 /* Field_Model */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = RoboticsSimulationAssets;
+			productName = Field_Model;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

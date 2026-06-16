@@ -47,28 +47,11 @@ struct HUDOverlay: View {
     @Binding var leftStickOffset: CGSize
     @Binding var rightStickOffset: CGSize
     @Binding var cameraMode: CameraMode
-    let matchLoad: MatchLoadController
 
     var body: some View {
         VStack {
             HStack {
-                // Red alliance match-load button. Each press enqueues one
-                // red pin to fly in from the west loader onto the field.
-                Button {
-                    matchLoad.pendingRed += 1
-                } label: {
-                    Text("Load Red")
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.red.opacity(0.85))
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                .padding(.leading, 16)
-                .padding(.top, 16)
-
                 Spacer()
-
                 Button {
                     cameraMode = (cameraMode == .thirdPerson) ? .firstPerson : .thirdPerson
                 } label: {
@@ -79,22 +62,7 @@ struct HUDOverlay: View {
                         .cornerRadius(8)
                 }
                 .padding()
-
                 Spacer()
-
-                // Blue alliance match-load button. Mirrors the red one.
-                Button {
-                    matchLoad.pendingBlue += 1
-                } label: {
-                    Text("Load Blue")
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 8)
-                        .background(Color.blue.opacity(0.85))
-                        .foregroundColor(.white)
-                        .cornerRadius(8)
-                }
-                .padding(.trailing, 16)
-                .padding(.top, 16)
             }
 
             Spacer()

@@ -1,0 +1,42 @@
+{
+  "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA" : {
+    "objectMetadataList" : [
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root",
+        "Field_Master"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root",
+        "Goal_Template"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root",
+        "Field_Master",
+        "OverRideFieldCleaned"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      }
+    ]
+  }
+}

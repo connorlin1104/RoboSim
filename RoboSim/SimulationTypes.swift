@@ -24,14 +24,6 @@ enum SimulationConstants {
     static let wallThickness:  Float = 0.05
     static var halfField:      Float { fieldSize / 2 }
     static var tileSize:       Float { fieldSize / 6 }
-
-    // When true, ContentView loads the legacy Reality Composer Pro "Scene"
-    // master entity and uses it to spawn pins / cups / matchloaders. When
-    // false (current default), the legacy path is skipped silently so the
-    // app runs cleanly while assets are being migrated to the exported
-    // FullField/VEX_Override_Field flow. Flip back to true to revert to
-    // the RCP-master strategy without deleting any code.
-    static let useLegacyRCPScene: Bool = false
 }
 
 // MARK: - Drive Input (shared between SwiftUI and RealityKit)
@@ -46,32 +38,4 @@ final class DriveInput: @unchecked Sendable {
 enum JoystickAxis {
     case vertical
     case horizontal
-}
-
-// MARK: - Pin Colors / Stance
-
-// rawValue must match the asset filename prefix exactly, e.g.
-// (top: .red, bottom: .blue) → "RedBluePin.usdz".
-enum PinHalfColor: String {
-    case red = "Red"
-    case blue = "Blue"
-    case yellow = "Yellow"
-}
-
-// How a spawned pin starts out — standing up or lying on its side.
-enum PinStance {
-    case vertical         // long axis along world Y (stands on its base)
-    case verticalFlipped  // standing upside-down — top half ends up on the bottom
-    case horizontal       // long axis horizontal — pin lies flat on the floor
-}
-
-// MARK: - Match Load Controller
-
-// Lets the SwiftUI HUD enqueue match-load requests that the RealityKit
-// scene-update closure processes on the next frame. Reference type so the
-// closure and the button share state; @unchecked because both ends run on
-// the main actor in practice.
-final class MatchLoadController: @unchecked Sendable {
-    var pendingRed: Int = 0
-    var pendingBlue: Int = 0
 }
