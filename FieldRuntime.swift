@@ -109,14 +109,20 @@ enum FieldRuntime {
         // loader) lifts AND a fresh pin is spawned just above it.
         final class Pair {
             let loader: Entity
-            let restWorldPos: SIMD3<Float>
+            let restWorldPos: SIMD3<Float>     // entity origin → drives lift animation
+            let visualCenter: SIMD3<Float>     // world-space mesh center → spawn anchor
             let line: TapeAABB
             let spawnVariant: PinVariant
             var phase: Float = 0
             var hasSpawnedThisVisit: Bool = false
-            init(loader: Entity, restWorldPos: SIMD3<Float>, line: TapeAABB, spawnVariant: PinVariant) {
+            init(loader: Entity,
+                 restWorldPos: SIMD3<Float>,
+                 visualCenter: SIMD3<Float>,
+                 line: TapeAABB,
+                 spawnVariant: PinVariant) {
                 self.loader = loader
                 self.restWorldPos = restWorldPos
+                self.visualCenter = visualCenter
                 self.line = line
                 self.spawnVariant = spawnVariant
             }
@@ -125,6 +131,9 @@ enum FieldRuntime {
         private var pairs: [Pair] = []
         private var pinTemplates: [PinVariant: Entity] = [:]
         private weak var spawnGroup: Entity?
+        // Cached so we don't recreate it per spawned pin.
+        private let spawnedPinMaterial: PhysicsMaterialResource =
+            .generate(staticFriction: 0.8, dynamicFriction: 0.7, restitution: 0.0)
 
         @MainActor
         init?(root: Entity) {
@@ -144,13 +153,31 @@ enum FieldRuntime {
             let redLines  = ["Red_Top",  "Red_Bottom"].compactMap(tapeAABB)
             guard !blueLines.isEmpty || !redLines.isEmpty else { return nil }
 
+            // We need three things per loader:
+            //   - entity origin in world coords (for the lift animation —
+            //     setPosition writes the origin)
+            //   - visual bounds center in world coords (for spawn anchor —
+            //     loader's mesh sits at an offset from its origin, so using
+            //     the origin for spawns lands pins in the middle of the field)
+            //   - origin XZ pair the assignment optimizer can sort by
+            struct Resolved {
+                let entity: Entity
+                let originXZ: SIMD2<Float>
+                let originWorld: SIMD3<Float>
+                let visualCenter: SIMD3<Float>
+            }
+
             func pair(loaderNames: [String], lines: [TapeAABB], spawnVariant: PinVariant) -> [Pair] {
-                let resolved: [(Entity, SIMD2<Float>, SIMD3<Float>)] =
-                    loaderNames.compactMap { name in
-                        guard let e = root.findEntity(named: name) else { return nil }
-                        let p = e.position(relativeTo: nil)
-                        return (e, SIMD2(p.x, p.z), p)
-                    }
+                let resolved: [Resolved] = loaderNames.compactMap { name in
+                    guard let e = root.findEntity(named: name) else { return nil }
+                    let p = e.position(relativeTo: nil)
+                    let bounds = e.visualBounds(relativeTo: nil)
+                    let center = (bounds.min + bounds.max) * 0.5
+                    return Resolved(entity: e,
+                                    originXZ: SIMD2(p.x, p.z),
+                                    originWorld: p,
+                                    visualCenter: center)
+                }
                 guard !resolved.isEmpty, !lines.isEmpty else { return [] }
 
                 func sqDist(_ a: SIMD2<Float>, _ b: SIMD2<Float>) -> Float {
@@ -162,24 +189,31 @@ enum FieldRuntime {
                 // at most one loader.
                 let mapping: [Int]
                 if resolved.count == 2 && lines.count == 2 {
-                    let direct  = sqDist(lines[0].centerXZ, resolved[0].1)
-                                + sqDist(lines[1].centerXZ, resolved[1].1)
-                    let swapped = sqDist(lines[1].centerXZ, resolved[0].1)
-                                + sqDist(lines[0].centerXZ, resolved[1].1)
+                    // Pair by visual center XZ — that's where the loader
+                    // actually appears, not where its hidden entity origin
+                    // lives.
+                    let v0 = SIMD2(resolved[0].visualCenter.x, resolved[0].visualCenter.z)
+                    let v1 = SIMD2(resolved[1].visualCenter.x, resolved[1].visualCenter.z)
+                    let direct  = sqDist(lines[0].centerXZ, v0)
+                                + sqDist(lines[1].centerXZ, v1)
+                    let swapped = sqDist(lines[1].centerXZ, v0)
+                                + sqDist(lines[0].centerXZ, v1)
                     mapping = direct <= swapped ? [0, 1] : [1, 0]
                 } else {
-                    mapping = resolved.map { _, xz, _ in
-                        (0..<lines.count).min(by: {
-                            sqDist(lines[$0].centerXZ, xz) <
-                            sqDist(lines[$1].centerXZ, xz)
+                    mapping = resolved.map { r in
+                        let v = SIMD2(r.visualCenter.x, r.visualCenter.z)
+                        return (0..<lines.count).min(by: {
+                            sqDist(lines[$0].centerXZ, v) <
+                            sqDist(lines[$1].centerXZ, v)
                         })!
                     }
                 }
 
                 var out: [Pair] = []
-                for (i, (entity, _, world)) in resolved.enumerated() {
-                    out.append(Pair(loader: entity,
-                                    restWorldPos: world,
+                for (i, r) in resolved.enumerated() {
+                    out.append(Pair(loader: r.entity,
+                                    restWorldPos: r.originWorld,
+                                    visualCenter: r.visualCenter,
                                     line: lines[mapping[i]],
                                     spawnVariant: spawnVariant))
                 }
@@ -220,11 +254,12 @@ enum FieldRuntime {
                 let target: Float = onLine ? 1 : 0
 
                 // Rising edge — first frame the robot lands on this line.
-                // Spawn one fresh pin above the loader. Reset the flag when
-                // the robot leaves so the next entry triggers another spawn.
+                // Spawn one fresh pin above the loader's *visible* center,
+                // not its entity origin. Reset the flag when the robot
+                // leaves so the next entry triggers another spawn.
                 if onLine && !pair.hasSpawnedThisVisit {
                     spawnPin(variant: pair.spawnVariant,
-                             at: pair.restWorldPos + SIMD3<Float>(0, lift + 0.05, 0))
+                             at: pair.visualCenter + SIMD3<Float>(0, lift + 0.05, 0))
                     pair.hasSpawnedThisVisit = true
                 } else if !onLine {
                     pair.hasSpawnedThisVisit = false
@@ -240,7 +275,9 @@ enum FieldRuntime {
         // Clone a pin prefab from RCP and drop it at `worldPos` as a fresh
         // dynamic body with gravity on. Whatever physics the template had
         // (static/kinematic) gets overridden — spawned pins need to actually
-        // fall onto the loader.
+        // fall onto the loader. The 0-restitution material is critical;
+        // PhysicsBodyComponent.init(mode:) without a material uses
+        // RealityKit defaults that bounce noticeably.
         @MainActor
         private func spawnPin(variant: PinVariant, at worldPos: SIMD3<Float>) {
             guard let template = pinTemplates[variant], let group = spawnGroup else { return }
@@ -251,7 +288,9 @@ enum FieldRuntime {
             clone.setPosition(worldPos, relativeTo: nil)
             clone.setOrientation(simd_quatf(angle: 0, axis: [0, 1, 0]), relativeTo: nil)
 
-            var body = PhysicsBodyComponent(mode: .dynamic)
+            var body = PhysicsBodyComponent(massProperties: .default,
+                                            material: spawnedPinMaterial,
+                                            mode: .dynamic)
             body.isAffectedByGravity = true
             body.angularDamping = 2.0
             body.linearDamping = 0.3
