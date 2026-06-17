@@ -55,3 +55,6 @@ playground.xcworkspace
 # Other
 *.swp
 *.lock
+
+# Large CAD source — kept locally, distributed out-of-band (>100MB exceeds GitHub's per-file cap)
+RoboSim/Match_Simulator/Sources/Field_Model/Field_Model.rkassets/VEX_Field_Model/OverRideFieldCleaned.usdc
