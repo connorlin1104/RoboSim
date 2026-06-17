@@ -7,31 +7,65 @@ struct ContentView: View {
     @State private var leftStickOffset: CGSize = .zero
     @State private var rightStickOffset: CGSize = .zero
     @State private var driveInput = DriveInput()
+    @State private var armUp: Bool = false
+    @State private var armDown: Bool = false
+    @State private var intakeIn: Bool = false
+    @State private var intakeOut: Bool = false
+    @State private var physicsDebug: Bool = false
 
     var body: some View {
         ZStack {
-            RealityView { content in
-                await makeScene(content: &content)
-            } update: { content in
-                updateCameraMode(content: content)
-            }
-            // `.pan` slides the camera laterally without rotating around the
-            // target. System pinch-to-zoom still works alongside it. Swap to
-            // `.orbit` for rotation, or `.dolly` for forward/back only.
-            .realityViewCameraControls(cameraMode == .thirdPerson ? .orbit : .none)
-            .edgesIgnoringSafeArea(.all)
-
-            HUDOverlay(leftStickOffset: $leftStickOffset,
-                       rightStickOffset: $rightStickOffset,
-                       cameraMode: $cameraMode)
+            realityLayer
+            hudLayer
         }
-        .onChange(of: leftStickOffset) { _, newValue in
-            driveInput.forward = max(-1, min(1, Float(-newValue.height / SimulationConstants.joystickRadius)))
-        }
-        .onChange(of: rightStickOffset) { _, newValue in
-            driveInput.turn = max(-1, min(1, Float(newValue.width / SimulationConstants.joystickRadius)))
-        }
+        .onChange(of: leftStickOffset)  { _, v in updateForward(v) }
+        .onChange(of: rightStickOffset) { _, v in updateTurn(v) }
+        .onChange(of: armUp)     { _, v in driveInput.armUp = v }
+        .onChange(of: armDown)   { _, v in driveInput.armDown = v }
+        .onChange(of: intakeIn)  { _, v in driveInput.intakeIn = v }
+        .onChange(of: intakeOut) { _, v in driveInput.intakeOut = v }
     }
+
+    private var realityLayer: some View {
+        RealityView { content in
+            await makeScene(content: &content)
+        } update: { content in
+            updateCameraMode(content: content)
+            updatePhysicsDebug(content: content)
+        }
+        // `.pan` slides the camera laterally without rotating around the
+        // target. System pinch-to-zoom still works alongside it. Swap to
+        // `.orbit` for rotation, or `.dolly` for forward/back only.
+        .realityViewCameraControls(cameraMode == .thirdPerson ? .orbit : .none)
+        .edgesIgnoringSafeArea(.all)
+    }
+
+    private var hudLayer: some View {
+        HUDOverlay(leftStickOffset: $leftStickOffset,
+                   rightStickOffset: $rightStickOffset,
+                   cameraMode: $cameraMode,
+                   armUp: $armUp,
+                   armDown: $armDown,
+                   intakeIn: $intakeIn,
+                   intakeOut: $intakeOut,
+                   physicsDebug: $physicsDebug)
+    }
+
+    private func updateForward(_ newValue: CGSize) {
+        let raw = Float(-newValue.height / SimulationConstants.joystickRadius)
+        driveInput.forward = max(-1, min(1, raw))
+    }
+
+    private func updateTurn(_ newValue: CGSize) {
+        let raw = Float(newValue.width / SimulationConstants.joystickRadius)
+        driveInput.turn = max(-1, min(1, raw))
+    }
+
+    // Anchor the loaded field root so the debug-overlay updater can find it
+    // without re-traversing all of content.entities each frame.
+    private static let fieldRootName = "MatchSimulatorRoot"
+
+    @State private var debugOverlay: FieldRuntime.PhysicsDebugOverlay?
 
     // RealityView's make closure body. Pulled out as a method because
     // having all of this inline made the Swift type-checker time out.
@@ -47,7 +81,7 @@ struct ContentView: View {
         // set directly each frame so friction doesn't matter.
         let surfaceMaterial = PhysicsMaterialResource.generate(friction: 0.5, restitution: 0)
 
-        await setupRoboticsField(content: &content)
+        let fieldRoot = await setupRoboticsField(content: &content)
 
         // --- ROBOT ---
         let robotEntity = RobotBuilder.build(surfaceMaterial: surfaceMaterial)
@@ -71,11 +105,21 @@ struct ContentView: View {
         light.look(at: lightTarget, from: lightFrom, relativeTo: nil)
         content.add(light)
 
+        // Wire post-load field processing (pin staticize, tape de-collide)
+        // and the matchloader lift animation that the drive loop will tick.
+        var lifter: FieldRuntime.MatchLoaderLifter? = nil
+        if let fieldRoot {
+            FieldRuntime.process(scene: fieldRoot)
+            lifter = FieldRuntime.MatchLoaderLifter(root: fieldRoot)
+            debugOverlay = FieldRuntime.PhysicsDebugOverlay(root: fieldRoot)
+        }
+
         RobotBuilder.attachDriveLoop(content: content,
                                      robotEntity: robotEntity,
                                      cameraEntity: cameraEntity,
                                      input: driveInput,
-                                     surfaceMaterial: surfaceMaterial)
+                                     surfaceMaterial: surfaceMaterial,
+                                     matchLoaderLifter: lifter)
     }
 
     // Reacts to SwiftUI camera-mode flips by attaching/detaching the
@@ -103,18 +147,30 @@ struct ContentView: View {
         }
     }
 
+    @MainActor
+    private func updatePhysicsDebug(content: RealityViewCameraContent) {
+        guard let overlay = debugOverlay else { return }
+        if physicsDebug {
+            overlay.show()
+        } else {
+            overlay.hide()
+        }
+    }
+
     #if os(iOS) || os(macOS)
     @MainActor
-    private func setupRoboticsField(content: inout RealityViewCameraContent) async {
+    private func setupRoboticsField(content: inout RealityViewCameraContent) async -> Entity? {
         // The Match_Simulator package's Scene.usda is the whole world:
-        // Floor_Physics + N/S/E/W Wall_Physics give the static perimeter,
-        // and Field_Master/OverRideFieldCleaned is the visual art plus
-        // baked-in pin physics. Cup and goal physics are still TODO
-        // (hollow shapes are harder to author by hand).
+        // Boundaries (floor + walls + alliance tapes) and Field_Master
+        // (visual field plus baked physics for pins, rollers, matchloaders).
+        // After loading we hand the root to FieldRuntime.process for
+        // pin/tape cleanup.
         guard let masterScene = try? await Entity(named: "Scene", in: field_ModelBundle) else {
-            return
+            return nil
         }
+        masterScene.name = Self.fieldRootName
         content.add(masterScene)
+        return masterScene
     }
     #endif
 }

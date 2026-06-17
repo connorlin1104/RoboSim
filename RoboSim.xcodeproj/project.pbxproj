@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B38BF7022FE1338900262FC5 /* Field_Model in Frameworks */ = {isa = PBXBuildFile; productRef = B38BF7012FE1338900262FC5 /* Field_Model */; };
+		B38BF7042FE2367800262FC5 /* FieldRuntime.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38BF7032FE2367800262FC5 /* FieldRuntime.swift */; };
+		B38BF7062FE2559400262FC5 /* PinLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38BF7052FE2559400262FC5 /* PinLayout.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +33,8 @@
 		B33E471D2FAEA04C0092E99B /* ConnorLinRoboSim.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ConnorLinRoboSim.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B33E472A2FAEA04F0092E99B /* RoboSimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoboSimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B33E47342FAEA04F0092E99B /* RoboSimUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RoboSimUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B38BF7032FE2367800262FC5 /* FieldRuntime.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldRuntime.swift; sourceTree = "<group>"; };
+		B38BF7052FE2559400262FC5 /* PinLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinLayout.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -84,6 +88,8 @@
 				B33E472D2FAEA04F0092E99B /* RoboSimTests */,
 				B33E47372FAEA04F0092E99B /* RoboSimUITests */,
 				B33E471E2FAEA04C0092E99B /* Products */,
+				B38BF7032FE2367800262FC5 /* FieldRuntime.swift */,
+				B38BF7052FE2559400262FC5 /* PinLayout.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -245,6 +251,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B38BF7042FE2367800262FC5 /* FieldRuntime.swift in Sources */,
+				B38BF7062FE2559400262FC5 /* PinLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

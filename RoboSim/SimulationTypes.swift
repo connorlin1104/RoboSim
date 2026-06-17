@@ -24,6 +24,23 @@ enum SimulationConstants {
     static let wallThickness:  Float = 0.05
     static var halfField:      Float { fieldSize / 2 }
     static var tileSize:       Float { fieldSize / 6 }
+
+    // Arm geometry & motion (kinematic — pure pose updates, no joint physics).
+    static let armPivotForwardOffset: Float = -0.18  // -Z is forward
+    static let armPivotHeight:        Float = 0.10
+    static let armLength:             Float = 0.22
+    static let armBarThickness:       Float = 0.02
+    static let armMinAngle:           Float = -0.15  // rad, slightly above horizontal
+    static let armMaxAngle:           Float = 1.35   // rad, nearly straight up
+    static let armSlewRate:           Float = 2.5    // rad/s
+    static let intakeRollerRadius:    Float = 0.025
+    static let intakeRollerLength:    Float = 0.16
+    static let intakeSpinRate:        Float = 12.0   // rad/s
+
+    // Matchloader lift animation.
+    static let matchLoaderLiftHeight: Float = 0.27   // m
+    static let matchLoaderLiftRate:   Float = 1.5   // m/s
+    static let tapeDetectInflateXZ:   Float = 0.08   // m, slop around line AABB
 }
 
 // MARK: - Drive Input (shared between SwiftUI and RealityKit)
@@ -31,6 +48,10 @@ enum SimulationConstants {
 final class DriveInput: @unchecked Sendable {
     var forward: Float = 0
     var turn: Float = 0
+    var armUp: Bool = false       // X — hold to raise arm; releasing freezes
+    var armDown: Bool = false     // A — hold to lower arm; releasing freezes
+    var intakeIn: Bool = false    // Y — hold to spin roller inward
+    var intakeOut: Bool = false   // B — hold to spin roller outward
 }
 
 // MARK: - Joystick

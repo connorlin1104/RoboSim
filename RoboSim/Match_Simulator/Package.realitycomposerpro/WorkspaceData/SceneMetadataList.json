@@ -4,7 +4,17 @@
       [
         "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
         "Root",
-        "Field_Master"
+        "Field_Origin"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root",
+        "Field_Origin",
+        "GameElements"
       ],
       {
         "isExpanded" : true,
@@ -21,7 +31,10 @@
       [
         "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
         "Root",
-        "Goal_Template"
+        "GameElements",
+        "Pins",
+        "cadPinModel",
+        "Materials"
       ],
       {
         "isExpanded" : true,
@@ -30,8 +43,41 @@
       [
         "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
         "Root",
-        "Field_Master",
-        "OverRideFieldCleaned"
+        "Field_Origin",
+        "GameElements",
+        "Pins"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root",
+        "GameElements",
+        "Pins",
+        "cadPinModel_2",
+        "Materials"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root",
+        "Field_Origin",
+        "Field_Master"
+      ],
+      {
+        "isExpanded" : true,
+        "isLocked" : false
+      },
+      [
+        "0AE88E71-BF5C-4D3C-BE6F-91F0B55C1FBA",
+        "Root",
+        "Field_Origin",
+        "Boundaries"
       ],
       {
         "isExpanded" : true,
