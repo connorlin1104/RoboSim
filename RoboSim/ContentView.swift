@@ -48,7 +48,8 @@ struct ContentView: View {
                    armDown: $armDown,
                    intakeIn: $intakeIn,
                    intakeOut: $intakeOut,
-                   physicsDebug: $physicsDebug)
+                   physicsDebug: $physicsDebug,
+                   onReset: { driveInput.resetRequested = true })
     }
 
     private func updateForward(_ newValue: CGSize) {
@@ -119,6 +120,7 @@ struct ContentView: View {
                                      cameraEntity: cameraEntity,
                                      input: driveInput,
                                      surfaceMaterial: surfaceMaterial,
+                                     fieldRoot: fieldRoot,
                                      matchLoaderLifter: lifter)
     }
 

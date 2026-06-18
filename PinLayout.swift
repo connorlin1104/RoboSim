@@ -71,15 +71,63 @@ struct PinSpec {
 }
 
 enum PinLayout {
-    // Add specs here. Leave empty to use the pins you hand-placed in RCP.
-    //
-    // Example:
-    // PinSpec(.redBlue,      x:  0.50, z: -1.20),
-    // PinSpec(.yellowYellow, x: -0.50, z: -1.20, orientation: .horizontalEast),
+    // Best-effort reconstruction of the birdseye reference screenshot. Field
+    // is centered at world origin; X is east/west (+X = east, right of
+    // screenshot), Z is north/south (+Z = south, bottom of screenshot).
+    // Coordinates are eyeballed — tune by hand once you can compare them
+    // against the running sim.
     static let pins: [PinSpec] = [
-        PinSpec(.redBlue,      x:  0.50, z: -1.20),
-        PinSpec(.yellowYellow, x: -0.50, z: -1.20, orientation: .horizontalEast),
-        PinSpec(.redYellow,    x:  0.00, z:  0.00, orientation: .verticalFlipped),
-        PinSpec(.blueYellow,   position: [0.3, 0.5, 0.2], orientation: .horizontalNorth),
+        // --- Center diamond: four upright pins flanking the small square
+        // at field center.
+        PinSpec(.yellowYellow, x:  0.00, z: -0.32),
+        PinSpec(.yellowYellow, x:  0.32, z:  0.00),
+        PinSpec(.yellowYellow, x:  0.00, z:  0.32),
+        PinSpec(.yellowYellow, x: -0.32, z:  0.00),
+
+        // --- NW star (red-side): vertical core + four horizontal radiators.
+        PinSpec(.redBlue,   x: -0.85, z: -0.70),
+        PinSpec(.redYellow, x: -1.15, z: -0.70, orientation: .horizontalWest),
+        PinSpec(.redYellow, x: -0.55, z: -0.70, orientation: .horizontalEast),
+        PinSpec(.redYellow, x: -0.85, z: -0.40, orientation: .horizontalSouth),
+        PinSpec(.redYellow, x: -0.85, z: -1.00, orientation: .horizontalNorth),
+
+        // --- NE star (blue-side).
+        PinSpec(.blueYellow, x:  0.85, z: -0.55),
+        PinSpec(.blueYellow, x:  1.15, z: -0.55, orientation: .horizontalEast),
+        PinSpec(.blueYellow, x:  0.55, z: -0.55, orientation: .horizontalWest),
+        PinSpec(.blueYellow, x:  0.85, z: -0.25, orientation: .horizontalSouth),
+        PinSpec(.blueYellow, x:  0.85, z: -0.85, orientation: .horizontalNorth),
+
+        // --- SW star (red-side).
+        PinSpec(.redBlue,   x: -0.55, z:  0.85),
+        PinSpec(.redYellow, x: -0.85, z:  0.85, orientation: .horizontalWest),
+        PinSpec(.redYellow, x: -0.25, z:  0.85, orientation: .horizontalEast),
+        PinSpec(.redYellow, x: -0.55, z:  0.55, orientation: .horizontalNorth),
+        PinSpec(.redYellow, x: -0.55, z:  1.15, orientation: .horizontalSouth),
+
+        // --- SE star (blue-side).
+        PinSpec(.blueYellow, x:  0.90, z:  0.85),
+        PinSpec(.blueYellow, x:  1.20, z:  0.85, orientation: .horizontalEast),
+        PinSpec(.blueYellow, x:  0.60, z:  0.85, orientation: .horizontalWest),
+        PinSpec(.blueYellow, x:  0.90, z:  0.55, orientation: .horizontalNorth),
+        PinSpec(.blueYellow, x:  0.90, z:  1.15, orientation: .horizontalSouth),
+
+        // --- Yellow scatter along midline / cardinal axes.
+        PinSpec(.yellowYellow, x: -1.55, z:  0.00),
+        PinSpec(.yellowYellow, x:  1.55, z:  0.00),
+        PinSpec(.yellowYellow, x:  0.00, z: -1.55),
+        PinSpec(.yellowYellow, x:  0.00, z:  1.55),
+
+        // --- Alliance-corner vertical singles, color matching corner.
+        PinSpec(.redBlue,     x: -1.45, z: -1.45),
+        PinSpec(.blueYellow,  x:  1.45, z: -1.45),
+        PinSpec(.redBlue,     x: -1.45, z:  1.45),
+        PinSpec(.blueYellow,  x:  1.45, z:  1.45),
+
+        // --- Inner halfway pins between star clusters and the center.
+        PinSpec(.yellowYellow, x: -0.45, z: -0.45, orientation: .horizontalEast),
+        PinSpec(.yellowYellow, x:  0.45, z: -0.45, orientation: .horizontalWest),
+        PinSpec(.yellowYellow, x: -0.45, z:  0.45, orientation: .horizontalEast),
+        PinSpec(.yellowYellow, x:  0.45, z:  0.45, orientation: .horizontalWest),
     ]
 }

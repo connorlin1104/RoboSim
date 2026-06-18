@@ -207,6 +207,7 @@ enum RobotBuilder {
                                 cameraEntity: Entity,
                                 input: DriveInput,
                                 surfaceMaterial: PhysicsMaterialResource,
+                                fieldRoot: Entity?,
                                 matchLoaderLifter: FieldRuntime.MatchLoaderLifter?) {
         let wheelRadius    = SimulationConstants.wheelRadius
         let chassisWidth   = SimulationConstants.chassisWidth
@@ -227,6 +228,29 @@ enum RobotBuilder {
                     pos.y = SimulationConstants.minCameraY
                     cameraEntity.look(at: .zero, from: pos, relativeTo: nil)
                 }
+            }
+
+            // One-shot reset triggered from the HUD's Reset button.
+            // Re-seats the robot at spawn, zeroes its motion, snaps the
+            // matchloaders back to rest + wipes their spawned pins, and
+            // re-installs the PinLayout clones at their authored poses.
+            if input.resetRequested {
+                input.resetRequested = false
+                robotEntity.position = [-1.5, wheelRadius, 0]
+                robotEntity.orientation = simd_quatf(angle: 0, axis: [0, 1, 0])
+                if var motion = robotEntity.components[PhysicsMotionComponent.self] {
+                    motion.linearVelocity = .zero
+                    motion.angularVelocity = .zero
+                    robotEntity.components.set(motion)
+                }
+                armAngle = SimulationConstants.armMinAngle
+                rollerSpin = 0
+                armPivot?.orientation = simd_quatf(angle: armAngle, axis: [1, 0, 0])
+                matchLoaderLifter?.reset()
+                if let root = fieldRoot {
+                    FieldRuntime.resetPinLayout(under: root)
+                }
+                return
             }
 
             // Respawn if fallen off the field
@@ -336,7 +360,7 @@ enum RobotBuilder {
 
             // --- Matchloader lift (alliance tape proximity) ------------------
             if let lifter = matchLoaderLifter {
-                lifter.tick(dt: dt, robotWorldPosition: robotEntity.position(relativeTo: nil))
+                lifter.tick(dt: dt, robotEntity: robotEntity)
             }
         }
     }

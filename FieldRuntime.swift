@@ -22,12 +22,20 @@ enum FieldRuntime {
         installPinLayout(PinLayout.pins, under: root)
     }
 
+    // Re-apply the static pin layout from PinLayout.pins. Called by the
+    // Reset button — clears any current PinSpecLayout clones and respawns
+    // them at their authored positions.
+    @MainActor
+    static func resetPinLayout(under root: Entity) {
+        installPinLayout(PinLayout.pins, under: root)
+    }
+
     // Clone each pin spec from its matching RCP prefab (RedBluePin etc.)
     // and stash the clones under a `PinSpecLayout` group. The originals
     // stay in the tree as templates but are disabled so they don't show
     // wherever you placed them in RCP.
     @MainActor
-    private static func installPinLayout(_ specs: [PinSpec], under root: Entity) {
+    static func installPinLayout(_ specs: [PinSpec], under root: Entity) {
         guard !specs.isEmpty else { return }
 
         var templates: [PinVariant: Entity] = [:]
@@ -54,10 +62,21 @@ enum FieldRuntime {
             clone.name = "Pin_\(spec.variant.rawValue)_\(group.children.count)"
             clone.isEnabled = true
             group.addChild(clone)
-            // Set world transform after parenting so the spec coords are
-            // interpreted in world space regardless of `group`'s position.
-            clone.setPosition(spec.position, relativeTo: nil)
+            // Bump Y up by a small margin so pins start *just above* the
+            // floor instead of clipping into it — initial overlap is the
+            // usual cause of explosive impulses on layout-spawn.
+            var pos = spec.position
+            pos.y += 0.02
+            clone.setPosition(pos, relativeTo: nil)
             clone.setOrientation(spec.orientation.quaternion, relativeTo: nil)
+            // Heavy damping on the cloned PhysicsBody so packed neighbors
+            // settle instead of flinging each other. The template's mass /
+            // mode / material are preserved; only damping is overridden.
+            if var body = clone.components[PhysicsBodyComponent.self] {
+                body.angularDamping = 4.0
+                body.linearDamping  = 1.0
+                clone.components.set(body)
+            }
         }
 
         for template in templates.values {
@@ -106,23 +125,28 @@ enum FieldRuntime {
 
         // Each loader is paired with the single nearest tape line of its
         // alliance color. Robot on that line → that loader (and only that
-        // loader) lifts AND a fresh pin is spawned just above it.
+        // loader) lifts AND a fresh pin is spawned just above it after a
+        // short delay (so the moving loader doesn't fling the pin upward).
         final class Pair {
             let loader: Entity
             let restWorldPos: SIMD3<Float>     // entity origin → drives lift animation
             let visualCenter: SIMD3<Float>     // world-space mesh center → spawn anchor
+            let loaderTopY: Float              // world-space top of loader at rest
             let line: TapeAABB
             let spawnVariant: PinVariant
             var phase: Float = 0
             var hasSpawnedThisVisit: Bool = false
+            var pendingSpawnDelay: Float? = nil    // seconds until the queued spawn fires
             init(loader: Entity,
                  restWorldPos: SIMD3<Float>,
                  visualCenter: SIMD3<Float>,
+                 loaderTopY: Float,
                  line: TapeAABB,
                  spawnVariant: PinVariant) {
                 self.loader = loader
                 self.restWorldPos = restWorldPos
                 self.visualCenter = visualCenter
+                self.loaderTopY = loaderTopY
                 self.line = line
                 self.spawnVariant = spawnVariant
             }
@@ -153,18 +177,21 @@ enum FieldRuntime {
             let redLines  = ["Red_Top",  "Red_Bottom"].compactMap(tapeAABB)
             guard !blueLines.isEmpty || !redLines.isEmpty else { return nil }
 
-            // We need three things per loader:
+            // We need four things per loader:
             //   - entity origin in world coords (for the lift animation —
             //     setPosition writes the origin)
-            //   - visual bounds center in world coords (for spawn anchor —
+            //   - visual bounds center in world coords (for spawn anchor X/Z —
             //     loader's mesh sits at an offset from its origin, so using
             //     the origin for spawns lands pins in the middle of the field)
+            //   - visual bounds top Y (so spawned pins clear the *actual* top
+            //     of the loader instead of getting punched through it)
             //   - origin XZ pair the assignment optimizer can sort by
             struct Resolved {
                 let entity: Entity
                 let originXZ: SIMD2<Float>
                 let originWorld: SIMD3<Float>
                 let visualCenter: SIMD3<Float>
+                let loaderTopY: Float
             }
 
             func pair(loaderNames: [String], lines: [TapeAABB], spawnVariant: PinVariant) -> [Pair] {
@@ -176,7 +203,8 @@ enum FieldRuntime {
                     return Resolved(entity: e,
                                     originXZ: SIMD2(p.x, p.z),
                                     originWorld: p,
-                                    visualCenter: center)
+                                    visualCenter: center,
+                                    loaderTopY: bounds.max.y)
                 }
                 guard !resolved.isEmpty, !lines.isEmpty else { return [] }
 
@@ -214,6 +242,7 @@ enum FieldRuntime {
                     out.append(Pair(loader: r.entity,
                                     restWorldPos: r.originWorld,
                                     visualCenter: r.visualCenter,
+                                    loaderTopY: r.loaderTopY,
                                     line: lines[mapping[i]],
                                     spawnVariant: spawnVariant))
                 }
@@ -244,31 +273,72 @@ enum FieldRuntime {
         }
 
         @MainActor
-        func tick(dt: Float, robotWorldPosition pos: SIMD3<Float>) {
-            let xz = SIMD2(pos.x, pos.z)
+        func tick(dt: Float, robotEntity: Entity) {
+            // AABB-vs-AABB: trigger if any part of the robot's visual
+            // bounding box overlaps the tape line, not just its origin.
+            let rb = robotEntity.visualBounds(relativeTo: nil)
+            let rMinX = rb.min.x, rMaxX = rb.max.x
+            let rMinZ = rb.min.z, rMaxZ = rb.max.z
+
             let lift = SimulationConstants.matchLoaderLiftHeight
             let step = SimulationConstants.matchLoaderLiftRate * dt / max(lift, 0.001)
 
             for pair in pairs {
-                let onLine = inside(xz, pair.line)
+                let onLine =
+                    rMinX <= pair.line.maxXZ.x && rMaxX >= pair.line.minXZ.x &&
+                    rMinZ <= pair.line.maxXZ.y && rMaxZ >= pair.line.minXZ.y
                 let target: Float = onLine ? 1 : 0
 
                 // Rising edge — first frame the robot lands on this line.
-                // Spawn one fresh pin above the loader's *visible* center,
-                // not its entity origin. Reset the flag when the robot
-                // leaves so the next entry triggers another spawn.
+                // Queue a delayed spawn so the loader has time to finish
+                // rising; if we spawned immediately, the moving loader
+                // would crash into the pin from below and fling it.
                 if onLine && !pair.hasSpawnedThisVisit {
-                    spawnPin(variant: pair.spawnVariant,
-                             at: pair.visualCenter + SIMD3<Float>(0, lift + 0.05, 0))
+                    pair.pendingSpawnDelay = SimulationConstants.matchLoaderSpawnDelay
                     pair.hasSpawnedThisVisit = true
                 } else if !onLine {
                     pair.hasSpawnedThisVisit = false
+                    pair.pendingSpawnDelay = nil
+                }
+
+                if let delay = pair.pendingSpawnDelay {
+                    let next = delay - dt
+                    if next <= 0 {
+                        // Spawn just above the *actual* top of the loader
+                        // at rest. By this point the loader is settled at
+                        // full lift, so the pin spawns clear of the mesh
+                        // and falls onto / past it under gravity.
+                        let spawnPos = SIMD3<Float>(
+                            pair.visualCenter.x,
+                            pair.loaderTopY + lift + 0.08,
+                            pair.visualCenter.z
+                        )
+                        spawnPin(variant: pair.spawnVariant, at: spawnPos)
+                        pair.pendingSpawnDelay = nil
+                    } else {
+                        pair.pendingSpawnDelay = next
+                    }
                 }
 
                 pair.phase = approach(pair.phase, target: target, step: step)
                 var p = pair.restWorldPos
                 p.y += pair.phase * lift
                 pair.loader.setPosition(p, relativeTo: nil)
+            }
+        }
+
+        // Wipe spawned pins and snap matchloaders back to rest. Used by the
+        // Reset button.
+        @MainActor
+        func reset() {
+            if let group = spawnGroup {
+                for child in Array(group.children) { child.removeFromParent() }
+            }
+            for pair in pairs {
+                pair.phase = 0
+                pair.hasSpawnedThisVisit = false
+                pair.pendingSpawnDelay = nil
+                pair.loader.setPosition(pair.restWorldPos, relativeTo: nil)
             }
         }
 

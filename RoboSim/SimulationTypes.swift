@@ -39,7 +39,8 @@ enum SimulationConstants {
 
     // Matchloader lift animation.
     static let matchLoaderLiftHeight: Float = 0.27   // m
-    static let matchLoaderLiftRate:   Float = 1.5   // m/s
+    static let matchLoaderLiftRate:   Float = 1.5    // m/s
+    static let matchLoaderSpawnDelay: Float = 0.5    // s — wait for lift to finish before dropping a pin
     static let tapeDetectInflateXZ:   Float = 0.08   // m, slop around line AABB
 }
 
@@ -52,6 +53,7 @@ final class DriveInput: @unchecked Sendable {
     var armDown: Bool = false     // A — hold to lower arm; releasing freezes
     var intakeIn: Bool = false    // Y — hold to spin roller inward
     var intakeOut: Bool = false   // B — hold to spin roller outward
+    var resetRequested: Bool = false  // one-shot: drive loop consumes & clears
 }
 
 // MARK: - Joystick

@@ -43,22 +43,22 @@ struct JoystickView: View {
 
 // MARK: - VEX-style buttons
 
-// Circular hold-to-activate button. All buttons render in the same neutral
-// translucent style — no per-button colors — so the HUD stays out of the way.
+// Circular hold-to-activate button. Same neutral style for all face/d-pad
+// buttons — smaller and less transparent than before to feel more physical.
 struct VEXButton: View {
     let label: String
     @Binding var isPressed: Bool
-    var size: CGFloat = 46
+    var size: CGFloat = 38
 
     var body: some View {
         ZStack {
             Circle()
-                .fill(.white.opacity(isPressed ? 0.32 : 0.10))
+                .fill(.white.opacity(isPressed ? 0.55 : 0.25))
             Circle()
-                .stroke(.white.opacity(isPressed ? 0.85 : 0.35), lineWidth: 1.5)
+                .stroke(.white.opacity(isPressed ? 1.0 : 0.65), lineWidth: 1.6)
             Text(label)
-                .font(.system(size: 17, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(isPressed ? 0.95 : 0.55))
+                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(isPressed ? 1.0 : 0.85))
         }
         .frame(width: size, height: size)
         .contentShape(Circle())
@@ -70,24 +70,24 @@ struct VEXButton: View {
     }
 }
 
-// Rounded-rectangle shoulder button (L1/L2/R1/R2). Same translucent style as
-// the face buttons, just a different shape to match a real V5 controller.
+// Rounded-rectangle shoulder button (L1/L2/R1/R2). Bigger than the face
+// buttons to mirror a real V5 controller's shoulder triggers.
 struct VEXShoulderButton: View {
     let label: String
     @Binding var isPressed: Bool
 
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 6)
-                .fill(.white.opacity(isPressed ? 0.32 : 0.10))
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(.white.opacity(isPressed ? 0.85 : 0.35), lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: 9)
+                .fill(.white.opacity(isPressed ? 0.55 : 0.25))
+            RoundedRectangle(cornerRadius: 9)
+                .stroke(.white.opacity(isPressed ? 1.0 : 0.65), lineWidth: 1.6)
             Text(label)
-                .font(.system(size: 13, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white.opacity(isPressed ? 0.95 : 0.55))
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .foregroundStyle(.white.opacity(isPressed ? 1.0 : 0.85))
         }
-        .frame(width: 52, height: 28)
-        .contentShape(RoundedRectangle(cornerRadius: 6))
+        .frame(width: 78, height: 42)
+        .contentShape(RoundedRectangle(cornerRadius: 9))
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in if !isPressed { isPressed = true } }
@@ -104,20 +104,22 @@ struct VEXButtonCluster: View {
     @Binding var intakeIn: Bool
     @Binding var intakeOut: Bool
 
-    private let buttonSpacing: CGFloat = 50
+    private let buttonSize: CGFloat = 36
+    private let buttonSpacing: CGFloat = 38
 
     var body: some View {
         ZStack {
-            VEXButton(label: "X", isPressed: $armUp)
+            VEXButton(label: "X", isPressed: $armUp, size: buttonSize)
                 .offset(y: -buttonSpacing)
-            VEXButton(label: "Y", isPressed: $intakeIn)
+            VEXButton(label: "Y", isPressed: $intakeIn, size: buttonSize)
                 .offset(x: -buttonSpacing)
-            VEXButton(label: "B", isPressed: $intakeOut)
+            VEXButton(label: "B", isPressed: $intakeOut, size: buttonSize)
                 .offset(x:  buttonSpacing)
-            VEXButton(label: "A", isPressed: $armDown)
+            VEXButton(label: "A", isPressed: $armDown, size: buttonSize)
                 .offset(y:  buttonSpacing)
         }
-        .frame(width: buttonSpacing * 2 + 46, height: buttonSpacing * 2 + 46)
+        .frame(width: buttonSpacing * 2 + buttonSize,
+               height: buttonSpacing * 2 + buttonSize)
     }
 }
 
@@ -130,16 +132,18 @@ struct DPadCluster: View {
     @Binding var left: Bool
     @Binding var right: Bool
 
-    private let buttonSpacing: CGFloat = 44
+    private let buttonSize: CGFloat = 30
+    private let buttonSpacing: CGFloat = 32
 
     var body: some View {
         ZStack {
-            VEXButton(label: "▲", isPressed: $up,    size: 40).offset(y: -buttonSpacing)
-            VEXButton(label: "◀", isPressed: $left,  size: 40).offset(x: -buttonSpacing)
-            VEXButton(label: "▶", isPressed: $right, size: 40).offset(x:  buttonSpacing)
-            VEXButton(label: "▼", isPressed: $down,  size: 40).offset(y:  buttonSpacing)
+            VEXButton(label: "▲", isPressed: $up,    size: buttonSize).offset(y: -buttonSpacing)
+            VEXButton(label: "◀", isPressed: $left,  size: buttonSize).offset(x: -buttonSpacing)
+            VEXButton(label: "▶", isPressed: $right, size: buttonSize).offset(x:  buttonSpacing)
+            VEXButton(label: "▼", isPressed: $down,  size: buttonSize).offset(y:  buttonSpacing)
         }
-        .frame(width: buttonSpacing * 2 + 40, height: buttonSpacing * 2 + 40)
+        .frame(width: buttonSpacing * 2 + buttonSize,
+               height: buttonSpacing * 2 + buttonSize)
     }
 }
 
@@ -154,6 +158,7 @@ struct HUDOverlay: View {
     @Binding var intakeIn: Bool
     @Binding var intakeOut: Bool
     @Binding var physicsDebug: Bool
+    var onReset: () -> Void
 
     // Buttons that exist on a V5 controller but aren't wired to robot
     // behavior yet — kept as local state. Hook them up to DriveInput as you
@@ -189,6 +194,7 @@ struct HUDOverlay: View {
             HStack(spacing: 12) {
                 cameraToggleButton
                 physicsToggleButton
+                resetButton
             }
             .padding(.top, 14)
 
@@ -220,6 +226,16 @@ struct HUDOverlay: View {
             physicsDebug.toggle()
         } label: {
             Text(physicsDebug ? "Hide Physics" : "Show Physics")
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .background(.ultraThinMaterial)
+                .cornerRadius(8)
+        }
+    }
+
+    private var resetButton: some View {
+        Button(action: onReset) {
+            Text("Reset")
                 .padding(.horizontal, 12)
                 .padding(.vertical, 8)
                 .background(.ultraThinMaterial)
